@@ -131,7 +131,7 @@
                     <label class="text-[10px] text-emerald-400 font-black uppercase tracking-wider mb-1">Meta Dia (3%)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-emerald-400 font-extrabold">$</span>
-                        <input type="number" id="daily-target" value="30.00" readonly class="bg-transparent text-sm text-emerald-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                        <input type="number" id="daily-target" value="0.00" readonly class="bg-transparent text-sm text-emerald-400 w-20 font-black focus:outline-none cursor-not-allowed">
                     </div>
                 </div>
                 <!-- Stop do Dia (Calculado - 4% - Fixo do Começo do Dia) -->
@@ -139,7 +139,7 @@
                     <label class="text-[10px] text-rose-400 font-black uppercase tracking-wider mb-1">Stop Dia (4%)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-rose-400 font-extrabold">$</span>
-                        <input type="number" id="daily-stop" value="40.00" readonly class="bg-transparent text-sm text-rose-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                        <input type="number" id="daily-stop" value="0.00" readonly class="bg-transparent text-sm text-rose-400 w-20 font-black focus:outline-none cursor-not-allowed">
                     </div>
                 </div>
                 <!-- Cotação USD/BRL - Totalmente unificado e automatizado -->
@@ -330,10 +330,7 @@
                 document.getElementById('usd-rate').value = state.rate;
             } else {
                 dataStore = [
-                    { id: 1, data: "2026-07-08", ativo: 'CARDANO', direcao: 'SELL', valor: 200, payout: 86, res: 'WIN' },
-                    { id: 2, data: "2026-07-08", ativo: 'CARDANO', direcao: 'BUY', valor: 100, payout: 86, res: 'WIN' },
-                    { id: 3, data: "2026-07-09", ativo: 'CARDANO', direcao: 'SELL', valor: 23, payout: 86, res: 'WIN' },
-                    { id: 4, data: "2026-07-10", ativo: 'CARDANO', direcao: 'BUY', valor: 25.84, payout: 86, res: 'WIN' }
+
                 ];
             }
             updateDashboard(true);
