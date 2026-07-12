@@ -123,7 +123,7 @@
                     <label class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-1">Banca Inicial</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-slate-500 font-extrabold">$</span>
-                        <input type="number" id="base-capital" value="1000.00" step="50" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(true)">
+                        <input type="number" id="base-capital" value="0.00" step="50" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(true)">
                     </div>
                 </div>
                 <!-- Meta do Dia (Calculada - 3% - Fixo do Começo do Dia) -->
@@ -369,7 +369,8 @@
             });
             
             // Lote de exatamente 1% do Capital Total Corrente no momento da criação
-            const autoEntrySize = parseFloat((currentCap * 0.01).toFixed(2));
+            <!--const autoEntrySize = parseFloat((currentCap * 0.005).toFixed(2));-->
+			const autoEntrySize = Math.ceil(currentCap * 0.005 * 100) / 100;
             
             dataStore.push({ id, data: getTodayLocalString(), ativo: 'CARDANO', direcao: 'BUY', valor: autoEntrySize, payout: 86, res: 'DRAW' });
             updateDashboard(true);
