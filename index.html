@@ -1,0 +1,907 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GB - Gerenciamento de Banca</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Chosen Palette: Midnight Trading Desk (Deep Navy, Emerald, Rose & Amber) -->
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght=300;400;500;600;700;800;900&display=swap');
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #090d16; 
+            background-image: radial-gradient(at 0% 0%, rgba(31, 41, 55, 0.3) 0, transparent 50%), radial-gradient(at 50% 0%, rgba(17, 24, 39, 0.5) 0, transparent 50%);
+        }
+        .powerbi-card { 
+            background: rgba(13, 20, 35, 0.7); 
+            border: 1px solid rgba(255, 255, 255, 0.05); 
+            backdrop-filter: blur(16px); 
+        }
+        .input-editable { 
+            background-color: rgba(255, 255, 255, 0.03); 
+            border: 1px solid rgba(255, 255, 255, 0.08); 
+            color: #ffffff; 
+            transition: all 0.2s; 
+        }
+        .input-editable:focus { 
+            border-color: #3b82f6; 
+            background-color: rgba(255, 255, 255, 0.08);
+            outline: none; 
+        }
+        .card-glow-emerald { box-shadow: 0 0 20px rgba(16, 185, 129, 0.15); border-color: rgba(16, 185, 129, 0.3); }
+        .card-glow-rose { box-shadow: 0 0 20px rgba(239, 68, 68, 0.15); border-color: rgba(239, 68, 68, 0.3); }
+        .card-glow-amber { box-shadow: 0 0 20px rgba(245, 158, 11, 0.15); border-color: rgba(245, 158, 11, 0.3); }
+        
+        @keyframes neon-glow-pulse-red {
+            0%, 100% {
+                box-shadow: 0 0 15px rgba(239, 68, 68, 0.45), inset 0 0 10px rgba(239, 68, 68, 0.2);
+                border-color: rgba(239, 68, 68, 0.6);
+                background-color: rgba(239, 68, 68, 0.12);
+            }
+            50% {
+                box-shadow: 0 0 35px rgba(239, 68, 68, 0.95), inset 0 0 20px rgba(239, 68, 68, 0.5);
+                border-color: rgba(248, 113, 113, 1);
+                background-color: rgba(239, 68, 68, 0.28);
+            }
+        }
+        .meta-atingida-glow-static {
+            box-shadow: 0 0 25px rgba(16, 185, 129, 0.65), inset 0 0 15px rgba(16, 185, 129, 0.3);
+            border: 2px solid #10b981 !important;
+            background-color: rgba(16, 185, 129, 0.15) !important;
+        }
+        .stop-atingido-glow {
+            animation: neon-glow-pulse-red 1.2s infinite ease-in-out !important;
+            border: 2px solid #ef4444 !important;
+        }
+        
+        .chart-container { 
+            position: relative; 
+            width: 100%; 
+            max-width: 100%; 
+            height: 200px; 
+            max-height: 250px; 
+        }
+
+        /* Container do Canvas de Velas com Rolagem Estilizada */
+        .candle-scroll-container {
+            width: 100%;
+            height: 220px;
+            overflow-x: auto;
+            overflow-y: hidden;
+            position: relative;
+        }
+        
+        /* Chrome, Safari, Edge, Opera: Ocultar setas de inputs numéricos */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox: Ocultar setas de inputs numéricos */
+        input[type=number] {
+            -moz-appearance: textfield;
+        }
+
+        /* Ajuste de largura e preenchimento dos inputs para evitar cortes */
+        input[type="date"] {
+            min-width: 115px;
+            padding-right: 2px;
+            padding-left: 6px;
+        }
+        
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: rgba(0,0,0,0.2); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 10px; }
+        ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.3); }
+    </style>
+</head>
+<body class="text-slate-200 min-h-screen p-4 lg:p-6">
+    <div class="max-w-7xl mx-auto space-y-6">
+        
+        <!-- HEADER -->
+        <header class="powerbi-card p-5 rounded-2xl flex flex-col xl:flex-row xl:items-center justify-between gap-5">
+            <div class="flex items-center gap-4">
+                <div class="bg-amber-500 text-slate-950 p-3 rounded-xl flex items-center justify-center font-black shadow-lg">
+                    <i class="fa-solid fa-chart-line text-2xl"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black text-white flex items-center gap-2 tracking-tight">
+                        GB <span class="text-xs bg-emerald-500/10 text-emerald-400 px-2.5 py-0.5 rounded-full font-bold border border-emerald-500/20">Pro</span>
+                    </h1>
+                    <p class="text-sm text-slate-400 font-bold tracking-wide">Gerenciamento de Banca</p>
+                </div>
+            </div>
+
+            <!-- CONTROLES DO CABEÇALHO UNIFICADOS (Bordas e Fundos Absolutamente Iguais) -->
+            <div class="grid grid-cols-2 md:flex md:flex-wrap items-center gap-3">
+                <!-- Banca Inicial (Editável) -->
+                <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800">
+                    <label class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-1">Banca Inicial</label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-m text-slate-500 font-extrabold">$</span>
+                        <input type="number" id="base-capital" value="1000.00" step="50" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(true)">
+                    </div>
+                </div>
+                <!-- Meta do Dia (Calculada - 3% - Fixo do Começo do Dia) -->
+                <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800">
+                    <label class="text-[10px] text-emerald-400 font-black uppercase tracking-wider mb-1">Meta Dia (3%)</label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-m text-emerald-400 font-extrabold">$</span>
+                        <input type="number" id="daily-target" value="30.00" readonly class="bg-transparent text-sm text-emerald-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                    </div>
+                </div>
+                <!-- Stop do Dia (Calculado - 4% - Fixo do Começo do Dia) -->
+                <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800">
+                    <label class="text-[10px] text-rose-400 font-black uppercase tracking-wider mb-1">Stop Dia (4%)</label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-m text-rose-400 font-extrabold">$</span>
+                        <input type="number" id="daily-stop" value="40.00" readonly class="bg-transparent text-sm text-rose-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                    </div>
+                </div>
+                <!-- Cotação USD/BRL - Totalmente unificado e automatizado -->
+                <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800 relative group">
+                    <label class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-1">USD/BRL</label>
+                    <div class="flex items-center gap-1">
+                        <span class="text-m text-slate-500 font-extrabold">R$</span>
+                        <input type="number" id="usd-rate" value="5.15" step="0.01" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(false)">
+                        <span id="api-status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- AÇÕES -->
+            <div class="flex flex-wrap gap-2">
+                <button onclick="exportData()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-2 border border-slate-700" title="Exportar Backup">
+                    <i class="fa-solid fa-download"></i> Backup
+                </button>
+                <button onclick="document.getElementById('import-file').click()" class="text-xs bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 px-4 rounded-xl transition flex items-center gap-2 border border-slate-700" title="Importar Backup">
+                    <i class="fa-solid fa-upload"></i> Importar
+                </button>
+                <input type="file" id="import-file" class="hidden" accept=".json" onchange="importData(event)">
+                <button onclick="openResetModal()" class="text-xs bg-rose-950/20 hover:bg-rose-950/40 text-rose-400 font-bold py-2.5 px-4 rounded-xl transition border border-rose-900/30 flex items-center gap-2">
+                    <i class="fa-solid fa-rotate-left"></i> Reset
+                </button>
+            </div>
+        </header>
+
+        <!-- KPI GRID -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+            <div id="card-profit-wrapper" class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-violet-500">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Lucro Líquido</p>
+                <h3 class="text-xl font-black text-violet-400" id="kpi-profit-usd">$ 0,00</h3>
+                <p class="text-xs font-semibold text-slate-500" id="kpi-profit-brl">R$ 0,00</p>
+            </div>
+            <div class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-sky-500">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Assertividade</p>
+                <h3 class="text-xl font-black text-sky-400" id="kpi-winrate">0%</h3>
+                <div class="w-full bg-slate-800 h-1.5 rounded-full overflow-hidden">
+                    <div id="bar-winrate" class="bg-sky-500 h-full w-0 transition-all duration-700"></div>
+                </div>
+            </div>
+            <div id="card-target-wrapper" class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-amber-500 transition-all duration-300">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Resultado Hoje</p>
+                <div class="flex items-center justify-between">
+                    <h3 class="text-xl font-black text-amber-400" id="kpi-today-profit">$ 0,00</h3>
+                    <i id="kpi-today-icon" class="fa-solid fa-gauge-high text-slate-600"></i>
+                </div>
+                <p class="text-xs font-semibold text-slate-500" id="kpi-today-status">Em progresso...</p>
+            </div>
+            <div class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-emerald-500">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Capital Total</p>
+                <h3 class="text-xl font-black text-emerald-400" id="kpi-capital-usd">$ 0,00</h3>
+                <p class="text-xs font-semibold text-slate-500" id="kpi-capital-brl">R$ 0,00</p>
+            </div>
+            <div class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-orange-500">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Profit Factor</p>
+                <h3 class="text-xl font-black text-orange-400" id="kpi-profit-factor">0.00</h3>
+                <p class="text-xs font-semibold text-slate-500">Eficiência Operacional</p>
+            </div>
+            <div id="card-roi-wrapper" class="powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-emerald-400">
+                <p class="text-[11px] font-black text-slate-400 uppercase tracking-wider">Retorno (ROI)</p>
+                <h3 class="text-xl font-black text-emerald-400" id="kpi-roi">0,00%</h3>
+                <p class="text-xs font-semibold text-slate-500">Sobre banca inicial</p>
+            </div>
+        </div>
+
+        <!-- MAIN DASHBOARD CONTENT -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+            
+            <!-- TABLE SECTION -->
+            <div class="lg:col-span-8 powerbi-card rounded-2xl flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-slate-800 bg-slate-900/30 flex justify-between items-center">
+                    <h2 class="text-xs font-black text-white uppercase tracking-wider flex items-center gap-2">
+                        <i class="fa-solid fa-list text-sky-400"></i> Log de Operações
+                    </h2>
+                    <button onclick="addRow()" class="bg-sky-600 hover:bg-sky-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition flex items-center gap-2 shadow-lg shadow-sky-600/20">
+                        <i class="fa-solid fa-plus"></i> NOVO TRADE
+                    </button>
+                </div>
+                <div class="overflow-x-auto flex-grow max-h-[500px]">
+                    <table class="w-full text-left border-collapse text-sm table-fixed min-w-[750px]">
+                        <thead>
+                            <!-- CABEÇALHO DA TABELA CALIBRADO E SINCRONIZADO -->
+                            <tr class="text-[11px] text-slate-400 uppercase font-black tracking-wider border-b border-slate-800 bg-slate-950/50">
+                                <th class="p-3 w-[4%] font-black text-center border-r border-slate-800/30">#</th>
+                                <th class="p-3 w-[16%] font-black text-center border-r border-slate-800/30">Data</th>
+                                <th class="p-3 w-[20%] font-black text-center border-r border-slate-800/30">Ativo / Dir.</th>
+                                <th class="p-3 w-[22%] font-black text-center border-r border-slate-800/30">Entrada / Payout</th>
+                                <th class="p-3 w-[16%] font-black text-center border-r border-slate-800/30">Resultado</th>
+                                <th class="p-3 w-[14%] font-black text-center border-r border-slate-800/30">Lucro</th>
+                                <th class="p-3 w-[8%] font-black text-center">Ações</th>
+                            </tr>
+                        </thead>
+                        <tbody id="table-body" class="divide-y divide-slate-800/50">
+                            <!-- Rows injected dynamically by JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- CHARTS SECTION -->
+            <div class="lg:col-span-4 space-y-6">
+                <!-- CHART VELAS DE PATRIMÔNIO (ROLANDO HORIZONTALMENTE COM FOCO NA ÚLTIMA VELA) -->
+                <div class="powerbi-card p-5 rounded-2xl flex flex-col justify-between">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-xs font-black text-white uppercase flex items-center gap-2 tracking-wider">
+                            <i class="fa-solid fa-chart-simple text-emerald-400"></i> Curva de Patrimônio (Velas)
+                        </h3>
+                        <!-- Seletor de visualização de moeda USD / BRL -->
+                        <div class="inline-flex bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px] font-black">
+                            <button id="toggle-chart-usd" onclick="setChartCurrency('USD')" class="px-2.5 py-1 rounded transition-all duration-200 bg-sky-600 text-white">USD</button>
+                            <button id="toggle-chart-brl" onclick="setChartCurrency('BRL')" class="px-2.5 py-1 rounded transition-all duration-200 text-slate-400 hover:text-white">BRL</button>
+                        </div>
+                    </div>
+                    <div id="candle-scroll-wrapper" class="candle-scroll-container">
+                        <canvas id="chart-capital" class="h-full block"></canvas>
+                    </div>
+                </div>
+                <div class="powerbi-card p-5 rounded-2xl">
+                    <h3 class="text-xs font-black text-white uppercase mb-4 flex items-center gap-2 tracking-wider">
+                        <i class="fa-solid fa-chart-bar text-violet-400"></i> Retorno por Dia
+                    </h3>
+                    <div class="chart-container">
+                        <canvas id="chart-profit"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL DE CONFIRMAÇÃO DE RESET -->
+    <div id="reset-modal" class="fixed inset-0 bg-black/80 backdrop-filter backdrop-blur-sm z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+        <div class="powerbi-card p-6 rounded-2xl max-w-md w-full mx-4 border border-rose-500/30 shadow-2xl">
+            <div class="flex items-center gap-3 text-rose-400 mb-4">
+                <i class="fa-solid fa-triangle-exclamation text-2xl"></i>
+                <h3 class="text-lg font-black tracking-tight text-white">Confirmar Reset</h3>
+            </div>
+            <p class="text-sm text-slate-400 leading-relaxed mb-6">
+                Tem certeza que deseja apagar todo o seu histórico de operações e restaurar os valores iniciais? Essa ação não poderá ser desfeita.
+            </p>
+            <div class="flex items-center justify-end gap-3">
+                <button onclick="closeResetModal()" class="px-4 py-2 rounded-xl text-xs font-bold bg-slate-800 hover:bg-slate-700 text-slate-300 transition border border-slate-700">
+                    Cancelar
+                </button>
+                <button onclick="confirmReset()" class="px-4 py-2 rounded-xl text-xs font-bold bg-rose-600 hover:bg-rose-500 text-white transition shadow-lg shadow-rose-600/20">
+                    Sim, Resetar Dados
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // Utils - Uso de fuso horário local do dispositivo do usuário
+        const getTodayLocalString = () => {
+            const d = new Date();
+            const year = d.getFullYear();
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const day = String(d.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        const formatDate = (d) => d.split('-').reverse().slice(0, 2).join('/');
+        const formatUSD = (v) => v.toLocaleString('en-US', { style: 'currency', currency: 'USD' });
+        const formatBRL = (v) => v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+
+        // State
+        let dataStore = [];
+        let charts = { profit: null };
+        let chartCurrency = 'USD'; // Moeda padrão exibida na curva de patrimônio
+
+        // Data Management
+        function saveData() {
+            localStorage.setItem('GB_pro_data', JSON.stringify({
+                trades: dataStore,
+                base: document.getElementById('base-capital').value,
+                rate: document.getElementById('usd-rate').value
+            }));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('GB_pro_data');
+            if (saved) {
+                const state = JSON.parse(saved);
+                dataStore = state.trades;
+                document.getElementById('base-capital').value = state.base;
+                document.getElementById('usd-rate').value = state.rate;
+            } else {
+                dataStore = [
+                    { id: 1, data: "2026-07-08", ativo: 'CARDANO', direcao: 'SELL', valor: 200, payout: 86, res: 'WIN' },
+                    { id: 2, data: "2026-07-08", ativo: 'CARDANO', direcao: 'BUY', valor: 100, payout: 86, res: 'WIN' },
+                    { id: 3, data: "2026-07-09", ativo: 'CARDANO', direcao: 'SELL', valor: 23, payout: 86, res: 'WIN' },
+                    { id: 4, data: "2026-07-10", ativo: 'CARDANO', direcao: 'BUY', valor: 25.84, payout: 86, res: 'WIN' }
+                ];
+            }
+            updateDashboard(true);
+        }
+
+        async function updateExchangeRate() {
+            try {
+                const res = await fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL');
+                const data = await res.json();
+                document.getElementById('usd-rate').value = parseFloat(data.USDBRL.bid).toFixed(2);
+                document.getElementById('api-status-dot').className = "w-1.5 h-1.5 rounded-full bg-emerald-500";
+                updateDashboard(false);
+            } catch (e) {
+                document.getElementById('api-status-dot').className = "w-1.5 h-1.5 rounded-full bg-rose-500";
+            }
+        }
+
+        // Logic
+        function addRow() {
+            const id = dataStore.length ? Math.max(...dataStore.map(t => t.id)) + 1 : 1;
+            
+            // Calcula o Capital atual antes de adicionar a linha para definir a entrada correta de 1%
+            const base = parseFloat(document.getElementById('base-capital').value) || 0;
+            let currentCap = base;
+            dataStore.forEach((t) => {
+                let profit = 0;
+                if (t.res === 'WIN') {
+                    profit = t.valor * (t.payout / 100);
+                } else if (t.res === 'LOSS') {
+                    profit = -t.valor;
+                }
+                currentCap += profit;
+            });
+            
+            // Lote de exatamente 1% do Capital Total Corrente no momento da criação
+            const autoEntrySize = parseFloat((currentCap * 0.01).toFixed(2));
+            
+            dataStore.push({ id, data: getTodayLocalString(), ativo: 'CARDANO', direcao: 'BUY', valor: autoEntrySize, payout: 86, res: 'DRAW' });
+            updateDashboard(true);
+        }
+
+        function deleteRow(id) {
+            dataStore = dataStore.filter(t => t.id !== id);
+            updateDashboard(true);
+        }
+
+        function editTrade(id, field, value) {
+            const trade = dataStore.find(t => t.id === id);
+            if (trade) {
+                trade[field] = (field === 'valor' || field === 'payout') ? parseFloat(value) : value;
+                updateDashboard(field === 'data' || field === 'res'); // Reconstrói se mexer em datas ou resultados
+            }
+        }
+
+        // Altera a moeda exibida no gráfico (USD / BRL)
+        function setChartCurrency(curr) {
+            chartCurrency = curr;
+            document.getElementById('toggle-chart-usd').className = curr === 'USD' 
+                ? "px-2.5 py-1 rounded transition-all duration-200 bg-sky-600 text-white" 
+                : "px-2.5 py-1 rounded transition-all duration-200 text-slate-400 hover:text-white";
+            document.getElementById('toggle-chart-brl').className = curr === 'BRL' 
+                ? "px-2.5 py-1 rounded transition-all duration-200 bg-emerald-600 text-white" 
+                : "px-2.5 py-1 rounded transition-all duration-200 text-slate-400 hover:text-white";
+            updateDashboard(false); // Atualiza os gráficos sem reconstruir a tabela inteira
+        }
+
+        function exportData() {
+            const blob = new Blob([JSON.stringify(dataStore, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `GB_Backup_${getTodayLocalString()}.json`;
+            a.click();
+        }
+
+        function importData(e) {
+            const reader = new FileReader();
+            reader.onload = (ev) => {
+                dataStore = JSON.parse(ev.target.result);
+                updateDashboard(true);
+            };
+            reader.readAsText(e.target.files[0]);
+        }
+
+        // Modais Customizados
+        function openResetModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeResetModal() {
+            const modal = document.getElementById('reset-modal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function confirmReset() {
+            localStorage.removeItem('GB_pro_data');
+            closeResetModal();
+            location.reload();
+        }
+
+        // Core Layout & Sizing Update Loop
+        function updateDashboard(rebuildTable = false) {
+            const base = parseFloat(document.getElementById('base-capital').value) || 0;
+            const rate = parseFloat(document.getElementById('usd-rate').value) || 5.15;
+            const today = getTodayLocalString(); // Data local
+
+            let currentCap = base;
+            let totalProfit = 0;
+            let grossWin = 0;
+            let grossLoss = 0;
+            let wins = 0;
+            let todayProfit = 0;
+
+            const table = document.getElementById('table-body');
+            if (rebuildTable) table.innerHTML = '';
+
+            const dailyData = {};
+
+            // 1. CÁLCULO MATEMÁTICO: Sempre processado em ordem cronológica (ID crescente) para manter o compound do capital e o gráfico corretos
+            dataStore.forEach((t) => {
+                let profit = 0;
+                if (t.res === 'WIN') {
+                    profit = t.valor * (t.payout / 100);
+                    grossWin += profit;
+                    wins++;
+                } else if (t.res === 'LOSS') {
+                    profit = -t.valor;
+                    grossLoss += t.valor;
+                }
+
+                totalProfit += profit;
+                currentCap += profit;
+                
+                // Comparação segura de fuso horário local
+                if (t.data === today) {
+                    todayProfit += profit;
+                }
+
+                if (!dailyData[t.data]) dailyData[t.data] = 0;
+                dailyData[t.data] += profit;
+            });
+
+            // 2. RENDERIZAÇÃO DA TABELA: Renderizada em ordem Decrescente (Trade mais recente no topo)
+            if (rebuildTable) {
+                // Copia e ordena decrescente pelo ID para mostrar o novo trade no topo absoluto
+                const sortedTradesForRender = [...dataStore].sort((a, b) => b.id - a.id);
+
+                sortedTradesForRender.forEach((t) => {
+                    let profit = 0;
+                    if (t.res === 'WIN') {
+                        profit = t.valor * (t.payout / 100);
+                    } else if (t.res === 'LOSS') {
+                        profit = -t.valor;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = "hover:bg-slate-800/30 transition group";
+                    tr.innerHTML = `
+                        <td class="p-3 w-[4%] text-slate-500 font-black text-center border-r border-slate-800/30">${t.id}</td>
+                        <td class="p-3 w-[16%] border-r border-slate-800/30 text-center">
+                            <input type="date" value="${t.data}" onchange="editTrade(${t.id}, 'data', this.value)" class="bg-slate-950/40 border border-slate-800/80 rounded-lg p-2 text-xs font-bold text-slate-300 w-full focus:outline-none focus:border-sky-500 text-center">
+                        </td>
+                        <td class="p-3 w-[20%] border-r border-slate-800/30">
+                            <div class="flex items-center gap-1.5 w-full bg-slate-950/40 border border-slate-800/80 rounded-lg px-2 py-1 focus-within:border-sky-500 transition">
+                                <input type="text" value="${t.ativo}" onchange="editTrade(${t.id}, 'ativo', this.value)" class="bg-transparent border-none p-0 font-extrabold text-white w-full focus:outline-none uppercase text-xs text-center" placeholder="Ativo">
+                                <span class="text-slate-800">|</span>
+                                <select onchange="editTrade(${t.id}, 'direcao', this.value)" class="bg-transparent border-none p-0 text-xs font-black ${t.direcao === 'BUY' ? 'text-emerald-400' : 'text-rose-400'} focus:outline-none cursor-pointer uppercase">
+                                    <option value="BUY" class="bg-slate-900 text-emerald-300" ${t.direcao === 'BUY' ? 'selected' : ''}>BUY</option>
+                                    <option value="SELL" class="bg-slate-900 text-rose-300" ${t.direcao === 'SELL' ? 'selected' : ''}>SELL</option>
+                                </select>
+                            </div>
+                        </td>
+                        <td class="p-3 w-[22%] border-r border-slate-800/30">
+                            <div class="flex items-center justify-center gap-1">
+                                <div class="flex items-center gap-1 bg-slate-950/40 border border-slate-800/80 rounded-lg px-2 py-1 w-[48%] focus-within:border-sky-500 transition">
+                                    <span class="text-[10px] text-slate-500 font-extrabold">$</span>
+                                    <input type="number" value="${t.valor}" onchange="editTrade(${t.id}, 'valor', this.value)" class="bg-transparent border-none p-0 text-center font-bold text-white w-full focus:outline-none text-xs">
+                                </div>
+                                <span class="text-slate-700 text-xs font-bold">/</span>
+                                <div class="flex items-center gap-0.5 bg-slate-950/40 border border-slate-800/80 rounded-lg px-2 py-1 w-[42%] focus-within:border-sky-500 transition">
+                                    <input type="number" value="${t.payout}" onchange="editTrade(${t.id}, 'payout', this.value)" class="bg-transparent border-none p-0 text-center text-xs text-slate-300 font-bold w-full focus:outline-none">
+                                    <span class="text-[9px] text-slate-500 font-bold">%</span>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="p-3 w-[16%] border-r border-slate-800/30 text-center">
+                            <div class="inline-flex bg-slate-950 p-1 rounded-lg gap-1 border border-slate-800/50">
+                                <button onclick="editTrade(${t.id}, 'res', 'WIN')" class="w-6 h-6 flex items-center justify-center rounded text-[11px] font-black ${t.res === 'WIN' ? 'bg-emerald-500 text-white shadow-lg shadow-emerald-500/20' : 'text-slate-600 hover:text-emerald-400'}">W</button>
+                                <button onclick="editTrade(${t.id}, 'res', 'LOSS')" class="w-6 h-6 flex items-center justify-center rounded text-[11px] font-black ${t.res === 'LOSS' ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20' : 'text-slate-600 hover:text-rose-400'}">L</button>
+                                <button onclick="editTrade(${t.id}, 'res', 'DRAW')" class="w-6 h-6 flex items-center justify-center rounded text-[11px] font-black ${t.res === 'DRAW' ? 'bg-slate-700 text-white' : 'text-slate-600 hover:text-slate-400'}">D</button>
+                            </div>
+                        </td>
+                        <td class="p-3 w-[14%] border-r border-slate-800/30 text-center font-black text-sm lg:text-[15px] px-2 truncate ${profit > 0 ? 'text-emerald-400' : profit < 0 ? 'text-rose-400' : 'text-slate-500'}">
+                            ${profit === 0 ? '$ 0.00' : profit < 0 ? `-$${Math.abs(profit).toFixed(2)}` : `$${profit.toFixed(2)}`}
+                        </td>
+                        <td class="p-3 w-[8%] text-center">
+                            <button onclick="deleteRow(${t.id})" class="text-slate-500 hover:text-rose-500 transition opacity-60 group-hover:opacity-100">
+                                <i class="fa-solid fa-trash text-xs"></i>
+                            </button>
+                        </td>
+                    `;
+                    table.appendChild(tr);
+                });
+            }
+
+            // 3. TRAVAMENTO DA META E STOP DIÁRIO: Calculados estritamente sobre o capital de início do dia corrente
+            const startOfDayCapital = currentCap - todayProfit;
+            const target = startOfDayCapital * 0.03;  // Fixo 3% sobre capital inicial do dia
+            const stop = startOfDayCapital * 0.04;    // Fixo 4% sobre capital inicial do dia
+
+            // Atualiza os inputs do cabeçalho em tempo real com valor fixo para o dia
+            document.getElementById('daily-target').value = target.toFixed(2);
+            document.getElementById('daily-stop').value = stop.toFixed(2);
+
+            // Lucro Líquido Dinâmico (Muda para vermelho se negativo)
+            const profitWrapper = document.getElementById('card-profit-wrapper');
+            const profitUsdEl = document.getElementById('kpi-profit-usd');
+            const profitBrlEl = document.getElementById('kpi-profit-brl');
+
+            profitUsdEl.innerText = totalProfit < 0 ? `-$${Math.abs(totalProfit).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : formatUSD(totalProfit);
+            profitBrlEl.innerText = totalProfit < 0 ? `-R$ ${Math.abs(totalProfit * rate).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : formatBRL(totalProfit * rate);
+
+            if (totalProfit < 0) {
+                profitWrapper.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-rose-500 card-glow-rose";
+                profitUsdEl.className = "text-xl font-black text-rose-400";
+            } else {
+                profitWrapper.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-violet-500";
+                profitUsdEl.className = "text-xl font-black text-violet-400";
+            }
+
+            // Capital Total Dinâmico e Conversões Cambiais
+            document.getElementById('kpi-capital-usd').innerText = formatUSD(currentCap);
+            document.getElementById('kpi-capital-brl').innerText = formatBRL(currentCap * rate);
+            
+            // Assertividade
+            const validTradesCount = dataStore.filter(t => t.res !== 'DRAW').length;
+            const wr = validTradesCount ? (wins / validTradesCount) * 100 : 0;
+            document.getElementById('kpi-winrate').innerText = `${isNaN(wr) ? 0 : wr.toFixed(1)}%`;
+            document.getElementById('bar-winrate').style.width = `${isNaN(wr) ? 0 : wr}%`;
+
+            // Profit Factor
+            const pf = grossLoss > 0 ? (grossWin / grossLoss).toFixed(2) : grossWin > 0 ? "MAX" : "0.00";
+            document.getElementById('kpi-profit-factor').innerText = pf;
+
+            // Retorno (ROI) Dinâmico (Vermelho quando Negativo)
+            const roiValue = base > 0 ? (totalProfit / base) * 100 : 0;
+            const roiWrapper = document.getElementById('card-roi-wrapper');
+            const roiEl = document.getElementById('kpi-roi');
+            roiEl.innerText = `${roiValue.toFixed(2)}%`;
+
+            if (roiValue < 0) {
+                roiWrapper.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-rose-500 card-glow-rose";
+                roiEl.className = "text-xl font-black text-rose-400";
+            } else {
+                roiWrapper.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-emerald-400";
+                roiEl.className = "text-xl font-black text-emerald-400";
+            }
+
+            // Resultado Hoje (Meta Batida Estática & Stop Loss Piscando)
+            const todayCard = document.getElementById('card-target-wrapper');
+            const todayIcon = document.getElementById('kpi-today-icon');
+            const todayText = document.getElementById('kpi-today-profit');
+            const todayStatus = document.getElementById('kpi-today-status');
+
+            todayText.innerText = todayProfit < 0 ? `-$${Math.abs(todayProfit).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` : formatUSD(todayProfit);
+
+            if (todayProfit >= target && target > 0) {
+                // Meta Batida -> Verde brilhante estático, sem animações de pulsação
+                todayCard.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 meta-atingida-glow-static transition-all duration-300";
+                todayText.className = "text-xl font-black text-emerald-400 tracking-tight";
+                todayIcon.className = "fa-solid fa-trophy text-emerald-400 text-xl";
+                todayStatus.innerHTML = '<span class="flex items-center gap-1.5 text-emerald-400 font-bold text-xs uppercase tracking-wider"><span class="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-ping"></span> Meta Batida! 🔥</span>';
+            } else if (todayProfit <= -stop && stop > 0) {
+                // Stop Loss Atingido -> Piscando em vermelho de alta atenção
+                todayCard.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 stop-atingido-glow transition-all duration-300";
+                todayText.className = "text-xl font-black text-rose-400 tracking-tight";
+                todayIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-xl";
+                todayStatus.innerHTML = '<span class="flex items-center gap-1.5 text-rose-400 font-bold text-xs uppercase tracking-wider"><span class="w-2.5 h-2.5 rounded-full bg-rose-400 animate-ping"></span> Stop Loss Atingido! 🛑</span>';
+            } else {
+                todayCard.className = "powerbi-card p-4 rounded-2xl flex flex-col justify-between h-28 border-l-4 border-l-amber-500";
+                todayText.className = todayProfit < 0 ? "text-xl font-black text-rose-400 tracking-tight" : "text-xl font-black text-amber-400 tracking-tight";
+                todayIcon.className = "fa-solid fa-gauge-high text-amber-500 text-xl";
+                todayStatus.innerText = todayProfit > 0 ? "Caminhando para meta..." : "Mantenha a calma.";
+            }
+
+            saveData();
+            renderCharts(dailyData, base);
+        }
+
+        // Charts Rendering
+        function renderCharts(dailyData, base) {
+            const rate = parseFloat(document.getElementById('usd-rate').value) || 5.15;
+            // Se a moeda do gráfico for BRL, aplica o multiplicador da cotação USD/BRL
+            const multiplier = chartCurrency === 'BRL' ? rate : 1;
+
+            // 1. GERAÇÃO DO GRÁFICO DE VELAS POR OPERAÇÃO (LOG DE OPERAÇÕES)
+            let runningCapital = base;
+            const candleData = [];
+
+            // Ordena os trades de forma cronológica (ID crescente) para mapear a evolução correta
+            const sortedTrades = [...dataStore].sort((a, b) => a.id - b.id);
+
+            sortedTrades.forEach((t) => {
+                let open = runningCapital;
+                let profit = 0;
+                
+                if (t.res === 'WIN') {
+                    profit = t.valor * (t.payout / 100);
+                } else if (t.res === 'LOSS') {
+                    profit = -t.valor;
+                }
+                
+                let close = open + profit;
+
+                // Pavios de volatilidade simulados baseados no valor do lote para manter a estética clássica de velas
+                let high = open;
+                let low = open;
+                
+                if (profit > 0) {
+                    high = close;
+                    low = open - (t.valor * 0.12); // Pequeno pavio de recuo inferior antes do ganho
+                } else if (profit < 0) {
+                    high = open + (t.valor * 0.12); // Pequeno pavio de alta superior antes da perda
+                    low = close;
+                }
+
+                // Aplica a moeda selecionada dinamicamente (USD ou BRL) multiplicando pelo fator correto
+                candleData.push({
+                    label: `${t.id}`, // Sem o símbolo '#'
+                    open: open * multiplier,
+                    high: high * multiplier,
+                    low: low * multiplier,
+                    close: close * multiplier,
+                    ativo: t.ativo
+                });
+
+                runningCapital = close; // O fechamento deste trade é a abertura do próximo
+            });
+
+            // Desenha as velas no Canvas
+            drawCandlestickChart('chart-capital', candleData);
+
+            // 2. GRÁFICO DE RETORNO DIÁRIO (Chart.js Bar)
+            const sortedDates = Object.keys(dailyData).sort();
+            const labels = sortedDates.map(formatDate);
+            const profitBars = sortedDates.map(d => dailyData[d] * multiplier);
+
+            if (charts.profit) charts.profit.destroy();
+            charts.profit = new Chart(document.getElementById('chart-profit'), {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: profitBars,
+                        backgroundColor: profitBars.map(v => v >= 0 ? 'rgba(16, 185, 129, 0.5)' : 'rgba(239, 68, 68, 0.5)'),
+                        borderRadius: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { display: false },
+                        y: { 
+                            grid: { color: 'rgba(255,255,255,0.03)' },
+                            ticks: { color: '#475569', font: { size: 9 } }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Custom Candlestick Canvas Renderer (Com Rolagem Dinâmica e Foco na Última Vela)
+        function drawCandlestickChart(canvasId, candleData) {
+            const canvas = document.getElementById(canvasId);
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const dpr = window.devicePixelRatio || 1;
+            
+            const scrollContainer = document.getElementById('candle-scroll-wrapper');
+            const containerWidth = scrollContainer.clientWidth;
+            const containerHeight = scrollContainer.clientHeight;
+            
+            // VELAS ESTREITADAS: Largura da vela (10px) + Espaçamento (4px) = 14px no total por unidade
+            const candleWidth = 10;
+            const gap = 4;
+            const candleWidthAndGap = candleWidth + gap; 
+            const paddingLeft = 15;
+            const paddingRight = 65; // Espaço reservado para preços limpos na lateral direita
+            const paddingTop = 20;
+            const paddingBottom = 20;
+            
+            const totalCandlesWidth = candleData.length * candleWidthAndGap;
+            const requiredWidth = paddingLeft + totalCandlesWidth + paddingRight;
+            
+            // Expande horizontalmente ao tamanho do visual quando houver poucos trades,
+            // senão ajusta a largura real para acomodar a barra de rolagem.
+            const actualWidth = Math.max(containerWidth, requiredWidth);
+            
+            canvas.style.width = actualWidth + 'px';
+            canvas.style.height = containerHeight + 'px';
+            
+            canvas.width = actualWidth * dpr;
+            canvas.height = containerHeight * dpr;
+            ctx.scale(dpr, dpr);
+            
+            ctx.clearRect(0, 0, actualWidth, containerHeight);
+            
+            if (candleData.length === 0) {
+                ctx.fillStyle = '#475569';
+                ctx.font = '11px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText('Aguardando primeiras operações...', actualWidth / 2, containerHeight / 2);
+                return;
+            }
+            
+            const chartWidth = actualWidth - paddingLeft - paddingRight;
+            const chartHeight = containerHeight - paddingTop - paddingBottom;
+            
+            // Encontra Máxima e Mínima Globais para a escala do eixo vertical
+            let globalMax = Math.max(...candleData.map(c => c.high));
+            let globalMin = Math.min(...candleData.map(c => c.low));
+            
+            let range = globalMax - globalMin;
+            if (range === 0) {
+                globalMax += 10;
+                globalMin -= 10;
+                range = 20;
+            } else {
+                // Margem de respiro vertical para as velas não baterem no teto ou chão
+                globalMax += range * 0.15;
+                globalMin -= range * 0.15;
+                range = globalMax - globalMin;
+            }
+            
+            // Função auxiliar de mapeamento Y
+            const getY = (val) => {
+                return paddingTop + chartHeight - ((val - globalMin) / range) * chartHeight;
+            };
+            
+            // Desenha Linhas de Grade Horizontais e Rótulos Laterais (Sem '$' e Com 2 Casas Decimais)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#475569';
+            ctx.font = '9px Inter';
+            ctx.textAlign = 'left';
+            
+            const gridLines = 4;
+            for (let i = 0; i <= gridLines; i++) {
+                const val = globalMin + (range * i) / gridLines;
+                const y = getY(val);
+                
+                ctx.beginPath();
+                ctx.moveTo(paddingLeft, y);
+                ctx.lineTo(paddingLeft + chartWidth, y);
+                ctx.stroke();
+                
+                // Exibe os preços sem '$' e sempre com 2 casas decimais (ex: 1246.00)
+                const formattedPrice = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                ctx.fillText(formattedPrice, paddingLeft + chartWidth + 6, y + 3);
+            }
+            
+            // Desenha as Velas Japonesas (Candlesticks) por Operação
+            candleData.forEach((c, index) => {
+                const x = paddingLeft + (index * candleWidthAndGap);
+                const xCenter = x + candleWidth / 2;
+                
+                const yOpen = getY(c.open);
+                const yClose = getY(c.close);
+                const yHigh = getY(c.high);
+                const yLow = getY(c.low);
+                
+                const isGreen = c.close >= c.open;
+                const candleColor = isGreen ? '#10b981' : '#ef4444';
+                
+                // 1. Desenha o Pavio (Sombra da Máxima à Mínima)
+                ctx.strokeStyle = candleColor;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(xCenter, yHigh);
+                ctx.lineTo(xCenter, yLow);
+                ctx.stroke();
+                
+                // 2. Desenha o Corpo Real da Vela
+                ctx.fillStyle = candleColor;
+                const bodyHeight = Math.abs(yClose - yOpen);
+                const yBodyStart = Math.min(yOpen, yClose);
+                const renderHeight = Math.max(1.5, bodyHeight);
+                
+                if (isGreen) {
+                    ctx.shadowColor = 'rgba(16, 185, 129, 0.4)';
+                    ctx.shadowBlur = 4;
+                } else {
+                    ctx.shadowColor = 'rgba(239, 68, 68, 0.3)';
+                    ctx.shadowBlur = 4;
+                }
+                
+                ctx.fillRect(x, yBodyStart, candleWidth, renderHeight);
+                ctx.shadowBlur = 0; // Reset
+                
+                // 3. Exibe o rótulo limpo no eixo horizontal (Sem o '#')
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'center';
+            ctx.font = '9px Inter';
+            ctx.fillText(c.label, xCenter, containerHeight - 4);
+            
+            // Desenha a linha de acompanhamento na última vela
+            if (index === candleData.length - 1) {
+                const lastCandleX = xCenter;
+                const lastCandleY = yClose;
+                
+                // Configura estilo tracejado
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                
+                // Linha Vertical
+                ctx.beginPath();
+                ctx.moveTo(lastCandleX, paddingTop);
+                ctx.lineTo(lastCandleX, paddingTop + chartHeight);
+                ctx.stroke();
+                
+                // Linha Horizontal
+                ctx.beginPath();
+                ctx.moveTo(paddingLeft, lastCandleY);
+                ctx.lineTo(paddingLeft + chartWidth, lastCandleY);
+                ctx.stroke();
+                
+                // Reseta tracejado
+                ctx.setLineDash([]);
+                
+                // Caixa de Preço Atual
+                const priceLabel = c.close.toFixed(2);
+                const labelWidth = 45;
+                const labelHeight = 18;
+                
+                // Define a cor baseada na cor da última vela (Verde para alta, Vermelho para baixa)
+                ctx.fillStyle = isGreen ? '#10b981' : '#ef4444';
+                ctx.fillRect(paddingLeft + chartWidth + 5, lastCandleY - labelHeight / 2, labelWidth, labelHeight);
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(priceLabel, paddingLeft + chartWidth + 5 + labelWidth / 2, lastCandleY + 4);
+            }
+        });
+
+        // Executa a rolagem automática suave para a extrema direita (última vela em foco)
+            setTimeout(() => {
+                scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            }, 50);
+        }
+
+        // Redesenha gráficos se o navegador mudar de tamanho (Mantém responsivo)
+        window.addEventListener('resize', () => {
+            if (dataStore.length > 0) {
+                updateDashboard(false);
+            }
+        });
+
+        window.onload = () => {
+            loadData();
+            updateExchangeRate();
+        }
+    </script>
+</body>
+</html>
