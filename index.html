@@ -71,21 +71,21 @@
                     <label class="text-[10px] text-emerald-400 font-black uppercase tracking-wider mb-1">Meta Dia (3%)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-emerald-400 font-extrabold">$</span>
-                        <input type="number" id="daily-target" value="30.00" readonly class="bg-transparent text-sm text-emerald-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                        <input type="number" id="daily-target" value="0.00" readonly class="bg-transparent text-sm text-emerald-400 w-20 font-black focus:outline-none cursor-not-allowed">
                     </div>
                 </div>
                 <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800">
                     <label class="text-[10px] text-rose-400 font-black uppercase tracking-wider mb-1">Stop Dia (4%)</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-rose-400 font-extrabold">$</span>
-                        <input type="number" id="daily-stop" value="40.00" readonly class="bg-transparent text-sm text-rose-400 w-20 font-black focus:outline-none cursor-not-allowed">
+                        <input type="number" id="daily-stop" value="0.00" readonly class="bg-transparent text-sm text-rose-400 w-20 font-black focus:outline-none cursor-not-allowed">
                     </div>
                 </div>
                 <div class="flex flex-col bg-slate-950/40 p-2 px-3 rounded-xl border border-slate-800 relative">
                     <label class="text-[10px] text-slate-500 font-black uppercase tracking-wider mb-1">USD/BRL</label>
                     <div class="flex items-center gap-1">
                         <span class="text-m text-slate-500 font-extrabold">R$</span>
-                        <input type="number" id="usd-rate" value="5.15" step="0.01" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(false)">
+                        <input type="number" id="usd-rate" value="0.00" step="0.01" class="bg-transparent text-sm text-white w-20 font-black focus:outline-none" oninput="updateDashboard(false)">
                         <span id="api-status-dot" class="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
                     </div>
                 </div>
@@ -250,10 +250,10 @@
                 document.getElementById('usd-rate').value = state.rate;
             } else {
                 dataStore = [
-                    { id: 1, data: "2026-07-08", ativo: 'CARDANO', direcao: 'SELL', valor: 200, payout: 86, res: 'WIN' },
-                    { id: 2, data: "2026-07-08", ativo: 'CARDANO', direcao: 'BUY', valor: 100, payout: 86, res: 'WIN' },
-                    { id: 3, data: "2026-07-09", ativo: 'CARDANO', direcao: 'SELL', valor: 23, payout: 86, res: 'WIN' },
-                    { id: 4, data: "2026-07-10", ativo: 'CARDANO', direcao: 'BUY', valor: 25.84, payout: 86, res: 'WIN' }
+                    <!--{ id: 1, data: "2026-07-08", ativo: 'CARDANO', direcao: 'SELL', valor: 200, payout: 86, res: 'WIN' },-->
+                    <!--{ id: 2, data: "2026-07-08", ativo: 'CARDANO', direcao: 'BUY', valor: 100, payout: 86, res: 'WIN' },-->
+                    <!--{ id: 3, data: "2026-07-09", ativo: 'CARDANO', direcao: 'SELL', valor: 23, payout: 86, res: 'WIN' },-->
+                    <!--{ id: 4, data: "2026-07-10", ativo: 'CARDANO', direcao: 'BUY', valor: 25.84, payout: 86, res: 'WIN' }-->
                 ];
             }
             updateDashboard(true);
