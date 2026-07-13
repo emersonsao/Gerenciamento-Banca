@@ -281,7 +281,7 @@
                 else if (t.res === 'LOSS') profit = -t.valor;
                 currentCap += profit;
             });
-            const autoEntrySize = Math.ceil(currentCap * 0.005 * 100) / 100;
+            const autoEntrySize = Math.ceil(currentCap * 0.0025 * 100) / 100;
             dataStore.push({ id, data: getTodayLocalString(), ativo: 'CARDANO', direcao: 'BUY', valor: autoEntrySize, payout: 86, res: 'DRAW' });
             updateDashboard(true);
         }
@@ -404,8 +404,8 @@
             }
 
             const startOfDayCapital = currentCap - todayProfit;
-            document.getElementById('daily-target').value = (startOfDayCapital * 0.03).toFixed(2);
-            document.getElementById('daily-stop').value = (startOfDayCapital * 0.04).toFixed(2);
+            document.getElementById('daily-target').value = (startOfDayCapital * 0.0075).toFixed(2);
+            document.getElementById('daily-stop').value = (startOfDayCapital * 0.01).toFixed(2);
             document.getElementById('kpi-profit-usd').innerText = totalProfit < 0 ? `-$${Math.abs(totalProfit).toLocaleString('en-US', { minimumFractionDigits: 2 })}` : formatUSD(totalProfit);
             document.getElementById('kpi-profit-brl').innerText = totalProfit < 0 ? `-R$ ${Math.abs(totalProfit * rate).toLocaleString('pt-BR', { minimumFractionDigits: 2 })}` : formatBRL(totalProfit * rate);
             document.getElementById('kpi-capital-usd').innerText = formatUSD(currentCap);
