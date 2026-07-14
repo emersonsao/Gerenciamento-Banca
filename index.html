@@ -178,6 +178,7 @@
                         <h3 class="text-xs font-black text-white uppercase flex items-center gap-2 tracking-wider">
                             <i class="fa-solid fa-chart-simple text-emerald-400"></i> Curva de Patrimônio (Velas)
                         </h3>
+                        <!-- Seletor de visualização de moeda USD / BRL -->
                         <div class="inline-flex bg-slate-950 p-0.5 rounded-lg border border-slate-800 text-[10px] font-black">
                             <button id="toggle-chart-usd" onclick="setChartCurrency('USD')" class="px-2.5 py-1 rounded transition-all duration-200 bg-sky-600 text-white">USD</button>
                             <button id="toggle-chart-brl" onclick="setChartCurrency('BRL')" class="px-2.5 py-1 rounded transition-all duration-200 text-slate-400 hover:text-white">BRL</button>
@@ -282,7 +283,7 @@
                 currentCap += profit;
             });
             const autoEntrySize = Math.ceil(currentCap * 0.0025 * 100) / 100;
-            dataStore.push({ id, data: getTodayLocalString(), ativo: 'CARDANO', direcao: 'BUY', valor: autoEntrySize, payout: 86, res: 'DRAW' });
+            dataStore.push({ id, data: getTodayLocalString(), ativo: 'Ativo', direcao: 'BUY', valor: autoEntrySize, payout: 89, res: 'DRAW' });
             updateDashboard(true);
         }
 
@@ -445,32 +446,198 @@
             });
         }
 
+        // Custom Candlestick Canvas Renderer (Com Rolagem Dinâmica e Foco na Última Vela)
         function drawCandlestickChart(canvasId, candleData) {
             const canvas = document.getElementById(canvasId);
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const dpr = window.devicePixelRatio || 1;
+            
             const scrollContainer = document.getElementById('candle-scroll-wrapper');
             const containerWidth = scrollContainer.clientWidth;
             const containerHeight = scrollContainer.clientHeight;
-            const candleWidth = 10, gap = 4, paddingLeft = 15, paddingRight = 65, paddingTop = 20, paddingBottom = 20;
-            const actualWidth = Math.max(containerWidth, paddingLeft + (candleData.length * (candleWidth + gap)) + paddingRight);
-            canvas.style.width = actualWidth + 'px'; canvas.width = actualWidth * dpr; canvas.height = containerHeight * dpr;
-            ctx.scale(dpr, dpr); ctx.clearRect(0, 0, actualWidth, containerHeight);
-            if (candleData.length === 0) return;
+            
+            // VELAS ESTREITADAS: Largura da vela (10px) + Espaçamento (4px) = 14px no total por unidade
+            const candleWidth = 10;
+            const gap = 4;
+            const candleWidthAndGap = candleWidth + gap; 
+            const paddingLeft = 15;
+            const paddingRight = 65; // Espaço reservado para preços limpos na lateral direita
+            const paddingTop = 20;
+            const paddingBottom = 20;
+            
+            const totalCandlesWidth = candleData.length * candleWidthAndGap;
+            const requiredWidth = paddingLeft + totalCandlesWidth + paddingRight;
+            
+            // Expande horizontalmente ao tamanho do visual quando houver poucos trades,
+            // senão ajusta a largura real para acomodar a barra de rolagem.
+            const actualWidth = Math.max(containerWidth, requiredWidth);
+            
+            canvas.style.width = actualWidth + 'px';
+            canvas.style.height = containerHeight + 'px';
+            
+            canvas.width = actualWidth * dpr;
+            canvas.height = containerHeight * dpr;
+            ctx.scale(dpr, dpr);
+            
+            ctx.clearRect(0, 0, actualWidth, containerHeight);
+            
+            if (candleData.length === 0) {
+                ctx.fillStyle = '#475569';
+                ctx.font = '11px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText('Aguardando primeiras operações...', actualWidth / 2, containerHeight / 2);
+                return;
+            }
+            
+            const chartWidth = actualWidth - paddingLeft - paddingRight;
             const chartHeight = containerHeight - paddingTop - paddingBottom;
-            let globalMax = Math.max(...candleData.map(c => c.high)), globalMin = Math.min(...candleData.map(c => c.low));
-            let range = (globalMax - globalMin) || 20;
-            const getY = (val) => paddingTop + chartHeight - ((val - globalMin) / range) * chartHeight;
+            
+            // Encontra Máxima e Mínima Globais para a escala do eixo vertical
+            let globalMax = Math.max(...candleData.map(c => c.high));
+            let globalMin = Math.min(...candleData.map(c => c.low));
+            
+            let range = globalMax - globalMin;
+            if (range === 0) {
+                globalMax += 10;
+                globalMin -= 10;
+                range = 20;
+            } else {
+                // Margem de respiro vertical para as velas não baterem no teto ou chão
+                globalMax += range * 0.15;
+                globalMin -= range * 0.15;
+                range = globalMax - globalMin;
+            }
+            
+            // Função auxiliar de mapeamento Y
+            const getY = (val) => {
+                return paddingTop + chartHeight - ((val - globalMin) / range) * chartHeight;
+            };
+            
+            // Desenha Linhas de Grade Horizontais e Rótulos Laterais (Sem '$' e Com 2 Casas Decimais)
+            ctx.strokeStyle = 'rgba(255, 255, 255, 0.03)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#475569';
+            ctx.font = '9px Inter';
+            ctx.textAlign = 'left';
+            
+            const gridLines = 4;
+            for (let i = 0; i <= gridLines; i++) {
+                const val = globalMin + (range * i) / gridLines;
+                const y = getY(val);
+                
+                ctx.beginPath();
+                ctx.moveTo(paddingLeft, y);
+                ctx.lineTo(paddingLeft + chartWidth, y);
+                ctx.stroke();
+                
+                // Exibe os preços sem '$' e sempre com 2 casas decimais (ex: 1246.00)
+                const formattedPrice = val.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+                ctx.fillText(formattedPrice, paddingLeft + chartWidth + 6, y + 3);
+            }
+            
+            // Desenha as Velas Japonesas (Candlesticks) por Operação
             candleData.forEach((c, index) => {
-                const x = paddingLeft + (index * (candleWidth + gap));
-                ctx.fillStyle = c.close >= c.open ? '#10b981' : '#ef4444';
-                ctx.fillRect(x, getY(Math.max(c.open, c.close)), candleWidth, Math.abs(getY(c.open) - getY(c.close)) || 2);
-            });
-            setTimeout(() => { scrollContainer.scrollLeft = scrollContainer.scrollWidth; }, 50);
+                const x = paddingLeft + (index * candleWidthAndGap);
+                const xCenter = x + candleWidth / 2;
+                
+                const yOpen = getY(c.open);
+                const yClose = getY(c.close);
+                const yHigh = getY(c.high);
+                const yLow = getY(c.low);
+                
+                const isGreen = c.close >= c.open;
+                const candleColor = isGreen ? '#10b981' : '#ef4444';
+                
+                // 1. Desenha o Pavio (Sombra da Máxima à Mínima)
+                ctx.strokeStyle = candleColor;
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(xCenter, yHigh);
+                ctx.lineTo(xCenter, yLow);
+                ctx.stroke();
+                
+                // 2. Desenha o Corpo Real da Vela
+                ctx.fillStyle = candleColor;
+                const bodyHeight = Math.abs(yClose - yOpen);
+                const yBodyStart = Math.min(yOpen, yClose);
+                const renderHeight = Math.max(1.5, bodyHeight);
+                
+                if (isGreen) {
+                    ctx.shadowColor = 'rgba(16, 185, 129, 0.4)';
+                    ctx.shadowBlur = 4;
+                } else {
+                    ctx.shadowColor = 'rgba(239, 68, 68, 0.3)';
+                    ctx.shadowBlur = 4;
+                }
+                
+                ctx.fillRect(x, yBodyStart, candleWidth, renderHeight);
+                ctx.shadowBlur = 0; // Reset
+                
+                // 3. Exibe o rótulo limpo no eixo horizontal (Sem o '#')
+            ctx.fillStyle = '#64748b';
+            ctx.textAlign = 'center';
+            ctx.font = '9px Inter';
+            ctx.fillText(c.label, xCenter, containerHeight - 4);
+            
+            // Desenha a linha de acompanhamento na última vela
+            if (index === candleData.length - 1) {
+                const lastCandleX = xCenter;
+                const lastCandleY = yClose;
+                
+                // Configura estilo tracejado
+                ctx.setLineDash([5, 5]);
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+                ctx.lineWidth = 1;
+                
+                // Linha Vertical
+                ctx.beginPath();
+                ctx.moveTo(lastCandleX, paddingTop);
+                ctx.lineTo(lastCandleX, paddingTop + chartHeight);
+                ctx.stroke();
+                
+                // Linha Horizontal
+                ctx.beginPath();
+                ctx.moveTo(paddingLeft, lastCandleY);
+                ctx.lineTo(paddingLeft + chartWidth, lastCandleY);
+                ctx.stroke();
+                
+                // Reseta tracejado
+                ctx.setLineDash([]);
+                
+                // Caixa de Preço Atual
+                const priceLabel = c.close.toFixed(2);
+                const labelWidth = 45;
+                const labelHeight = 18;
+                
+                // Define a cor baseada na cor da última vela (Verde para alta, Vermelho para baixa)
+                ctx.fillStyle = isGreen ? '#10b981' : '#ef4444';
+                ctx.fillRect(paddingLeft + chartWidth + 5, lastCandleY - labelHeight / 2, labelWidth, labelHeight);
+                
+                ctx.fillStyle = '#ffffff';
+                ctx.font = 'bold 10px Inter';
+                ctx.textAlign = 'center';
+                ctx.fillText(priceLabel, paddingLeft + chartWidth + 5 + labelWidth / 2, lastCandleY + 4);
+            }
+        });
+
+        // Executa a rolagem automática suave para a extrema direita (última vela em foco)
+            setTimeout(() => {
+                scrollContainer.scrollLeft = scrollContainer.scrollWidth;
+            }, 50);
         }
 
-        window.onload = () => { loadData(); updateExchangeRate(); }
+        // Redesenha gráficos se o navegador mudar de tamanho (Mantém responsivo)
+        window.addEventListener('resize', () => {
+            if (dataStore.length > 0) {
+                updateDashboard(false);
+            }
+        });
+
+        window.onload = () => {
+            loadData();
+            updateExchangeRate();
+        }
     </script>
 </body>
 </html>
