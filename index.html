@@ -8,6 +8,8 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js para renderização de gráficos interativos -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Google Identity Services para autenticação e integração com o Google Drive -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
     <style>
         * {
             margin: 0;
@@ -171,6 +173,29 @@
         
         .btn-primary:hover {
             opacity: 0.9;
+        }
+
+        .btn-cloud {
+            background: rgba(244, 63, 94, 0.1);
+            color: #f43f5e;
+            border: 1px solid rgba(244, 63, 94, 0.2);
+        }
+
+        .btn-cloud:hover {
+            background: rgba(244, 63, 94, 0.2);
+            color: #fda4af;
+        }
+
+        .btn-cloud.connected {
+            background: rgba(16, 185, 129, 0.1);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-cloud.local-mode {
+            background: rgba(245, 158, 11, 0.1);
+            color: #f59e0b;
+            border: 1px solid rgba(245, 158, 11, 0.3);
         }
         
         /* KPI Grid */
@@ -498,7 +523,7 @@
             border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 14px;
             padding: 28px;
-            max-width: 400px;
+            max-width: 450px;
             width: 90%;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
@@ -520,6 +545,7 @@
             display: flex;
             gap: 12px;
             justify-content: center;
+            flex-wrap: wrap;
         }
         
         .form-input {
@@ -605,6 +631,34 @@
         @keyframes slideIn {
             to { transform: translateX(0); }
         }
+
+        /* Barras de Rolagem Estilizadas Premium */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #0f1520;
+            border-radius: 10px;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 10px;
+            border: 1px solid rgba(148, 163, 184, 0.08);
+            transition: background 0.2s;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #3b82f6;
+        }
+        
+        /* Suporte Firefox */
+        .custom-scrollbar {
+            scrollbar-width: thin;
+            scrollbar-color: #1e293b #0f1520;
+        }
     </style>
 </head>
 <body>
@@ -645,6 +699,7 @@
             </div>
             
             <div class="flex gap-2">
+                <button class="btn btn-cloud" id="btnGoogleDrive" onclick="showGoogleDriveModal()">☁️ Google Drive</button>
                 <button class="btn btn-outline" onclick="exportarDados()">⬇️ Backup</button>
                 <label class="btn btn-outline cursor-pointer m-0">
                     ⬆️ Importar
@@ -697,7 +752,7 @@
                     <div class="panel-title">📋 LOG DE OPERAÇÕES</div>
                     <button class="btn btn-primary" onclick="adicionarTrade()">➕ NOVO TRADE</button>
                 </div>
-                <div class="table-container" id="tabelaContainer">
+                <div class="table-container custom-scrollbar" id="tabelaContainer">
                     <!-- Gerado dinamicamente via JS -->
                 </div>
             </div>
@@ -711,8 +766,11 @@
                             <button class="currency-btn" id="btnBRL" onclick="mudarMoeda('BRL')">BRL</button>
                         </div>
                     </div>
-                    <div class="chart-wrapper">
-                        <canvas id="canvasEvolucao"></canvas>
+                    <!-- wrapper com rolagem horizontal personalizada -->
+                    <div class="chart-wrapper custom-scrollbar overflow-x-auto">
+                        <div id="wrapperEvolucao" style="width: 100%; height: 100%;">
+                            <canvas id="canvasEvolucao"></canvas>
+                        </div>
                     </div>
                     <div class="text-right text-xs text-slate-500 mt-2">
                         Total: <span id="graficoOperacoes" class="font-bold text-slate-300">0</span> trades realizados
@@ -723,8 +781,11 @@
                     <div class="panel-header">
                         <div class="panel-title">📊 PERFORMANCE DIÁRIA (<span id="graficoMoeda">USD</span>)</div>
                     </div>
-                    <div class="chart-wrapper">
-                        <canvas id="canvasRetornoDiario"></canvas>
+                    <!-- wrapper com rolagem horizontal personalizada -->
+                    <div class="chart-wrapper custom-scrollbar overflow-x-auto">
+                        <div id="wrapperRetornoDiario" style="width: 100%; height: 100%;">
+                            <canvas id="canvasRetornoDiario"></canvas>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -755,23 +816,201 @@
         </div>
     </div>
 
+    <!-- Modal Google Drive & Nuvem Settings -->
+    <div class="modal" id="modalGoogleDrive">
+        <div class="modal-content text-left">
+            <h3 class="text-center">☁️ Configurações de Nuvem</h3>
+            
+            <!-- Secção de Nuvem Direta Ativa (Zero Configuração) -->
+            <div class="bg-indigo-950/40 p-4 rounded-xl border border-indigo-500/20 mb-4 space-y-3">
+                <div class="font-bold flex items-center justify-between text-xs text-indigo-300">
+                    <span>⚡ NUVEM DIRETA GB PRO</span>
+                    <span class="text-[10px] bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded">Ativa & Pronta</span>
+                </div>
+                <p class="text-[11px] text-slate-300 leading-relaxed">
+                    Sua banca já está sincronizada de forma 100% segura e automática nesta máquina. Para carregar seus dados em outro navegador ou dispositivo, use sua Chave abaixo:
+                </p>
+                <div class="space-y-1">
+                    <label class="block text-[10px] font-semibold text-indigo-300">SUA CHAVE DE ACESSO EXCLUSIVA</label>
+                    <div class="flex gap-2">
+                        <input type="text" readonly class="form-input m-0 text-left text-xs py-1.5 px-3 bg-indigo-950/80 border-indigo-500/30 font-mono text-slate-300" id="inputChaveNuvem" value="Carregando chave...">
+                        <button class="btn btn-outline py-1 px-3 bg-indigo-900/40 hover:bg-indigo-900 border-indigo-500/30 text-indigo-300" onclick="copiarChaveNuvem()">Copiar</button>
+                    </div>
+                </div>
+                <div class="space-y-1 pt-1 border-t border-indigo-500/10">
+                    <label class="block text-[10px] font-semibold text-indigo-300">CARREGAR DADOS DE OUTRA CHAVE</label>
+                    <div class="flex gap-2">
+                        <input type="text" class="form-input m-0 text-left text-xs py-1.5 px-3 bg-indigo-950/80 border-indigo-500/30" id="inputImportarChave" placeholder="Cole uma chave do GB Pro">
+                        <button class="btn btn-primary py-1 px-3" onclick="carregarDeChaveAlternativa()">Conectar</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-800 my-4 pt-4"></div>
+
+            <p class="text-xs text-slate-400 mb-4 text-center">Configurações para desenvolvedores (Google Cloud):</p>
+            
+            <div class="mb-4">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CLIENT ID DO GOOGLE CLOUD</label>
+                <input type="text" class="form-input m-0 text-left text-xs py-2 px-3" id="inputGoogleClientId" placeholder="Digite seu Google Client ID">
+                <span class="text-[10px] text-slate-500 block mt-1">Crie um projeto no Google Cloud Console, ative a Drive API e gere um ID de cliente OAuth 2.0 Web Application.</span>
+            </div>
+
+            <div class="bg-slate-900/60 p-3 rounded-lg border border-slate-800 text-xs text-slate-300 mb-4 space-y-2">
+                <div class="font-bold flex items-center gap-2"><span id="googleStatusIndicator">🔴</span> Status GDrive: <span id="googleStatusText">Desconectado</span></div>
+                <div class="text-[10px] leading-relaxed text-slate-400 border-t border-slate-800 pt-2">
+                    <strong>⚠️ Nota sobre Arquivo Local:</strong> Como o app está sendo aberto diretamente do seu computador (<code class="text-amber-500 font-bold">file:///C:/</code>), o Google bloqueia conexões automáticas de login por segurança. Para enviar seu arquivo ao Google Drive, salve-o clicando no botão <strong>"⬇️ Backup"</strong> no topo do app e arraste o arquivo baixado para a sua página do Drive!
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn btn-primary" id="btnGoogleConnect" onclick="actionGoogleConnect()">Conectar Conta GDrive</button>
+                <button class="btn btn-danger hidden" id="btnGoogleDisconnect" onclick="actionGoogleDisconnect()">Desconectar</button>
+                <button class="btn btn-outline" onclick="fecharModal('modalGoogleDrive')">Fechar</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+        import { getAuth, signInAnonymously, signInWithCustomToken } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+        import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+        window.db = null;
+        window.auth = null;
+        window.fbUser = null;
+
+        window.addEventListener('load', async () => {
+            if (typeof __firebase_config !== 'undefined') {
+                try {
+                    const firebaseConfig = JSON.parse(__firebase_config);
+                    const app = initializeApp(firebaseConfig);
+                    window.db = getFirestore(app);
+                    window.auth = getAuth(app);
+
+                    const token = typeof __initial_auth_token !== 'undefined' ? __initial_auth_token : null;
+                    let userCredential;
+                    if (token) {
+                        userCredential = await signInWithCustomToken(window.auth, token);
+                    } else {
+                        userCredential = await signInAnonymously(window.auth);
+                    }
+                    
+                    const user = userCredential.user;
+                    if (user) {
+                        window.fbUser = user;
+                        document.getElementById('inputChaveNuvem').value = user.uid;
+                        inicializarSincronismoFirestore(user.uid);
+                    }
+                } catch (e) {
+                    console.error("Erro ao inicializar Firebase Firestore:", e);
+                }
+            } else {
+                // Fallback inteligente para quando o app roda direto do arquivo local (file:///) sem a nuvem ativa
+                let localUid = localStorage.getItem('GB_LOCAL_UID');
+                if (!localUid) {
+                    if (typeof crypto !== 'undefined' && crypto.randomUUID) {
+                        localUid = 'LOCAL-' + crypto.randomUUID().slice(0, 18).toUpperCase();
+                    } else {
+                        localUid = 'LOCAL-' + Math.random().toString(36).substring(2, 10).toUpperCase() + '-' + Math.random().toString(36).substring(2, 10).toUpperCase();
+                    }
+                    localStorage.setItem('GB_LOCAL_UID', localUid);
+                }
+                document.getElementById('inputChaveNuvem').value = localUid;
+            }
+        });
+
+        window.inicializarSincronismoFirestore = function(uid) {
+            if (!window.db) return;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const docRef = doc(window.db, 'artifacts', appId, 'users', uid, 'dados_banca', 'principal');
+            
+            onSnapshot(docRef, (docSnap) => {
+                if (docSnap.exists()) {
+                    const dados = docSnap.data();
+                    const localSyncTime = localStorage.getItem('GB_LAST_SYNC_TIME') || '0';
+                    
+                    // Sobrescreve apenas se os dados da nuvem forem mais recentes ou locais estiverem vazios
+                    if (trades.length === 0 || (dados.updatedAt && new Date(dados.updatedAt) > new Date(localSyncTime))) {
+                        trades = dados.trades || [];
+                        bancaInicial = dados.bancaInicial || 10000;
+                        document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
+                        
+                        if (dados.updatedAt) {
+                            localStorage.setItem('GB_LAST_SYNC_TIME', dados.updatedAt);
+                        }
+                        
+                        calcularTudoSemLoop();
+                        showToast("Sincronizado automaticamente com a Nuvem Direta!", "success");
+                    }
+                }
+            }, (err) => {
+                console.error("Erro ao ler dados da Nuvem Direta:", err);
+            });
+        }
+
+        window.salvarNoFirestore = async function() {
+            if (!window.db || !window.fbUser) return;
+            const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-app-id';
+            const userId = window.fbUser.uid;
+            
+            const docRef = doc(window.db, 'artifacts', appId, 'users', userId, 'dados_banca', 'principal');
+            const updatedAt = new Date().toISOString();
+            
+            const dados = {
+                trades: trades,
+                bancaInicial: bancaInicial,
+                taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15,
+                updatedAt: updatedAt
+            };
+            
+            try {
+                await setDoc(docRef, dados);
+                localStorage.setItem('GB_LAST_SYNC_TIME', updatedAt);
+                console.log("Sucesso ao salvar na Nuvem Direta.");
+            } catch (err) {
+                console.error("Erro ao enviar para Nuvem Direta:", err);
+            }
+        }
+    </script>
 
     <script>
         let trades = [];
         let bancaInicial = 10000;
         let moedaGrafico = 'USD';
+        let dadosAlteradosSemSalvar = false;
         
         // Referência global aos gráficos do Chart.js
         let chartEvolucao = null;
         let chartDiario = null;
+
+        // Configuração do Google Drive API
+        let tokenClient = null;
+        let googleAccessToken = null;
+        let googleSyncTimer = null;
+        const DEFAULT_GOOGLE_CLIENT_ID = "YOUR_CLIENT_ID_HERE.apps.googleusercontent.com"; // Placeholder
         
         window.onload = function() {
             carregarDados();
             inicializarGraficos();
             buscarCotacao();
+            inicializarGoogleAuth();
+            configurarControleSair();
         };
+
+        function configurarControleSair() {
+            // Exibe o alerta padrão do navegador caso o usuário tenha feito alterações e tente fechar sem exportar
+            window.addEventListener('beforeunload', function(e) {
+                if (dadosAlteradosSemSalvar) {
+                    const msg = "Você tem alterações que podem não ter sido salvas fisicamente. Deseja mesmo sair?";
+                    e.returnValue = msg;
+                    return msg;
+                }
+            });
+        }
         
         function showToast(mensagem, tipo = 'success') {
             const container = document.getElementById('toastContainer');
@@ -815,6 +1054,14 @@
                 taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15
             };
             localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
+            
+            // Sincronização automática na Nuvem Direta via Firestore
+            if (window.salvarNoFirestore) {
+                window.salvarNoFirestore();
+            }
+            
+            // Agenda sincronização com o Google Drive se ativo
+            agendarSincronismoGoogle();
         }
         
         function buscarCotacao() {
@@ -824,7 +1071,7 @@
                     if (d && d.USDBRL) {
                         const valorCotado = parseFloat(d.USDBRL.bid);
                         document.getElementById('taxaCambio').value = valorCotado.toFixed(2);
-                        showToast(`Cotação do Dólar updated: R$ ${valorCotado.toFixed(2)}`, 'success');
+                        showToast(`Cotação do Dólar atualizada: R$ ${valorCotado.toFixed(2)}`, 'success');
                     }
                     calcularTudo();
                 })
@@ -844,7 +1091,7 @@
             } else if (trade.resultado === 'LOSS') {
                 return -valor;
             }
-            return 0; // EMPATE
+            return 0; // EMPATE / DRAW
         }
         
         function capitalAtual() {
@@ -865,6 +1112,7 @@
             const parsed = parseFloat(valor);
             if (!isNaN(parsed) && parsed > 0) {
                 bancaInicial = parsed;
+                dadosAlteradosSemSalvar = true;
                 calcularTudo();
                 showToast('Banca inicial atualizada!', 'success');
             } else {
@@ -878,20 +1126,9 @@
             const capital = capitalAtual();
             const lucroTotal = capital - bancaInicial;
             
-            // Gerar string do dia de hoje baseado no fuso horário local (evitando mudança prematura no ISO UTC)
-            const dLocal = new Date();
-            const hojeLocalStr = dLocal.getFullYear() + '-' + 
-                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
-                                String(dLocal.getDate()).padStart(2, '0');
-
-            // Capital inicial do dia de hoje (bancaInicial + lucro acumulado de trades de dias ANTERIORES)
-            const capitalInicioDia = bancaInicial + trades
-                .filter(t => t.data < hojeLocalStr)
-                .reduce((soma, t) => soma + calcularLucro(t), 0);
-            
-            // Metas estáticas baseadas no capital do início do dia (atualizadas apenas na virada do dia)
-            const meta = capitalInicioDia * 0.0075;
-            const stop = capitalInicioDia * 0.01;
+            // Meta do dia (0.75%) e Stop do dia (1.00%) baseados no Capital Total atual
+            const meta = capital * 0.0075;
+            const stop = capital * 0.01;
             
             document.getElementById('displayMeta').textContent = '+ ' + formatarMoeda(meta, 'USD');
             document.getElementById('displayStop').textContent = '- ' + formatarMoeda(stop, 'USD');
@@ -915,6 +1152,11 @@
             document.getElementById('barraWinrate').style.width = Math.min(winrate, 100) + '%';
             
             // Resultado Hoje
+            const dLocal = new Date();
+            const hojeLocalStr = dLocal.getFullYear() + '-' + 
+                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(dLocal.getDate()).padStart(2, '0');
+
             const lucroHoje = trades
                 .filter(t => t.data === hojeLocalStr && t.resultado)
                 .reduce((soma, t) => soma + calcularLucro(t), 0);
@@ -989,16 +1231,16 @@
             }
             
             let html = `
-                <table>
+                <table class="w-full">
                     <thead>
                         <tr>
-                            <th style="width: 10%">#</th>
-                            <th style="width: 18%">Data</th>
-                            <th style="width: 30%">Valor</th>
-                            <th style="width: 10%">Payout %</th>
-                            <th style="width: 18%">Resultado</th>
-                            <th style="width: 10%">Retorno</th>
-                            <th style="width: 4%"></th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 8%">#</th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 22%">Data</th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 32%">Valor da Entrada</th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 14%">Payout</th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 14%">Resultado</th>
+                            <th class="py-3 px-4 text-center text-[11px] uppercase tracking-wider font-bold" style="width: 10%">Retorno</th>
+                            <th class="py-3 px-2 text-center" style="width: 5%"></th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1010,33 +1252,36 @@
                 const lucro = calcularLucro(trade);
                 
                 html += `
-                    <tr>
-                        <td style="color: #64748b; font-weight: 600; text-align: center;">${idxOriginal + 1}</td>
-                        <td>
-                            <input type="date" class="trade-input text-center mx-auto" style="max-width: 125px; padding: 6px 4px;" value="${trade.data}" onchange="atualizarTrade(${trade.id}, 'data', this.value)">
+                    <tr class="border-b border-slate-800/40 hover:bg-slate-800/10 transition-colors">
+                        <td class="text-slate-500 font-bold text-center py-3 px-4">${idxOriginal + 1}</td>
+                        <td class="py-3 px-4">
+                            <input type="date" class="trade-input w-full max-w-[150px] mx-auto text-center" value="${trade.data}" onchange="atualizarTrade(${trade.id}, 'data', this.value)">
                         </td>
-                        <td>
-                            <div class="flex items-center justify-center gap-1 mx-auto" style="max-width: 160px;">
-                                <button class="val-btn" onclick="desdobrarValor(${trade.id})" title="Desdobrar valor (/2)">-</button>
-                                <input type="number" class="trade-input text-center" style="width: 70px;" value="${trade.valor}" step="any" onchange="atualizarTrade(${trade.id}, 'valor', parseFloat(this.value) || 0)">
-                                <button class="val-btn" onclick="dobrarValor(${trade.id})" title="Dobrar valor (x2)">+</button>
+                        <td class="py-3 px-4">
+                            <div class="flex items-center justify-center gap-1.5 w-full max-w-[180px] mx-auto">
+                                <button class="val-btn px-2.5 py-1 text-xs" onclick="desdobrarValor(${trade.id})" title="Desdobrar valor (/2)">-</button>
+                                <input type="number" class="trade-input text-center font-bold text-sm w-[90px]" value="${trade.valor}" step="any" onchange="atualizarTrade(${trade.id}, 'valor', parseFloat(this.value) || 0)">
+                                <button class="val-btn px-2.5 py-1 text-xs" onclick="dobrarValor(${trade.id})" title="Dobrar valor (x2)">+</button>
                             </div>
                         </td>
-                        <td>
-                            <input type="number" class="trade-input text-center mx-auto" style="max-width: 55px;" value="${trade.payout}" step="any" onchange="atualizarTrade(${trade.id}, 'payout', parseFloat(this.value) || 0)">
+                        <td class="py-3 px-4 text-center">
+                            <div class="inline-flex items-center justify-center gap-1 bg-slate-950/40 border border-slate-800 rounded-lg px-2 py-1 max-w-[80px]">
+                                <input type="number" class="trade-input bg-transparent border-0 p-0 text-center text-sm font-semibold w-[36px]" value="${trade.payout}" step="any" onchange="atualizarTrade(${trade.id}, 'payout', parseFloat(this.value) || 0)">
+                                <span class="text-[11px] text-slate-500 font-bold">%</span>
+                            </div>
                         </td>
-                        <td>
+                        <td class="py-3 px-4">
                             <div class="flex gap-1 justify-center">
                                 <button class="result-btn win ${trade.resultado === 'WIN' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'WIN')">W</button>
                                 <button class="result-btn loss ${trade.resultado === 'LOSS' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'LOSS')">L</button>
                                 <button class="result-btn draw ${trade.resultado === 'EMPATE' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'EMPATE')">D</button>
                             </div>
                         </td>
-                        <td class="${lucro > 0 ? 'profit-positive text-center' : lucro < 0 ? 'profit-negative text-center' : 'text-center'}" style="white-space: nowrap;">
+                        <td class="py-3 px-4 text-center font-bold text-sm whitespace-nowrap ${lucro > 0 ? 'profit-positive' : lucro < 0 ? 'profit-negative' : 'text-slate-450'}">
                             ${lucro > 0 ? '+' : ''}${formatarMoeda(lucro, 'USD')}
                         </td>
-                        <td>
-                            <button class="delete-btn mx-auto" onclick="removerTrade(${trade.id})">🗑️</button>
+                        <td class="py-3 px-2 text-center">
+                            <button class="delete-btn hover:bg-red-500/10 rounded-lg p-2" onclick="removerTrade(${trade.id})" title="Remover operação">🗑️</button>
                         </td>
                     </tr>
                 `;
@@ -1047,25 +1292,27 @@
         }
         
         function adicionarTrade() {
-            // Entrada sugerida padrão = 0,25% do capital total atualizado
+            // Entrada sugerida padrão = 0,25% do capital total atualizado, arredondada para baixo e sem casas decimais
             const capital = capitalAtual();
-            const entradaSugerida = parseFloat((capital * 0.0025).toFixed(2));
+            const entradaSugerida = Math.floor(capital * 0.0025);
             
             const novoTrade = {
                 id: Date.now() + Math.floor(Math.random() * 1000),
                 data: new Date().toISOString().split('T')[0],
                 valor: entradaSugerida,
                 payout: 89, // Entrada padrão do Payout = 89
-                resultado: null
+                resultado: 'EMPATE' // Padrão: Draw (D) ao iniciar novo trade
             };
             
             trades.push(novoTrade);
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Nova operação inserida no log!', 'success');
         }
         
         function atualizarTrade(id, campo, valor) {
             trades = trades.map(t => t.id === id ? { ...t, [campo]: valor } : t);
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
         }
 
@@ -1078,6 +1325,7 @@
                 }
                 return t;
             });
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Valor da operação duplicado!', 'success');
         }
@@ -1091,17 +1339,20 @@
                 }
                 return t;
             });
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Valor da operação dividido por 2!', 'success');
         }
         
         function definirResultado(id, resultado) {
             trades = trades.map(t => t.id === id ? { ...t, resultado } : t);
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
         }
         
         function removerTrade(id) {
             trades = trades.filter(t => t.id !== id);
+            dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Operação removida.', 'warning');
         }
@@ -1122,13 +1373,14 @@
                     datasets: [{
                         label: 'Saldo do Capital',
                         data: [],
-                        borderColor: '#3b82f6',
-                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
                         borderWidth: 3,
                         fill: true,
                         tension: 0.3,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#2563eb'
+                        pointRadius: 5,
+                        borderColor: '#10b981',
+                        backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                        pointBackgroundColor: '#10b981',
+                        pointBorderColor: '#10b981'
                     }]
                 },
                 options: {
@@ -1197,14 +1449,36 @@
             tradesFinalizados.forEach((t, i) => {
                 saldoAtual += calcularLucro(t);
                 saldos.push(saldoAtual * multiplicador);
-                labelsSaldo.push(`#${i+1}`);
+                labelsSaldo.push(`${i+1}`); // Símbolo "#" removido do eixo de evolução do capital
             });
+
+            // Lógica Carteira de Investimentos: Todo o gráfico muda de colunas com base no lucro macro
+            const estaEmLucro = saldoAtual >= bancaInicial;
+            const corTema = estaEmLucro ? '#10b981' : '#ef4444';
+            const corSombra = estaEmLucro ? 'rgba(16, 185, 129, 0.08)' : 'rgba(239, 68, 68, 0.08)';
 
             chartEvolucao.data.labels = labelsSaldo;
             chartEvolucao.data.datasets[0].data = saldos;
-            chartEvolucao.data.datasets[0].borderColor = saldoAtual >= bancaInicial ? '#10b981' : '#ef4444';
-            chartEvolucao.data.datasets[0].backgroundColor = saldoAtual >= bancaInicial ? 'rgba(16, 185, 129, 0.05)' : 'rgba(239, 68, 68, 0.05)';
+            chartEvolucao.data.datasets[0].borderColor = corTema;
+            chartEvolucao.data.datasets[0].backgroundColor = corSombra;
+            chartEvolucao.data.datasets[0].pointBackgroundColor = corTema;
+            chartEvolucao.data.datasets[0].pointBorderColor = corTema;
+            
+            // Ajustar largura mínima do container do gráfico de evolução para evitar compressão
+            const wrapperEvol = document.getElementById('wrapperEvolucao');
+            const minWidthEvol = Math.max(100, labelsSaldo.length * 35);
+            const targetWidthEvol = labelsSaldo.length > 10 ? `${minWidthEvol}px` : '100%';
+            if (wrapperEvol.style.width !== targetWidthEvol) {
+                wrapperEvol.style.width = targetWidthEvol;
+            }
             chartEvolucao.update();
+            chartEvolucao.resize();
+
+            // Rolar automaticamente para o último trade (final do eixo X)
+            setTimeout(() => {
+                const parent = wrapperEvol.parentElement;
+                parent.scrollLeft = parent.scrollWidth;
+            }, 50);
 
             // 2. Atualizar Retorno Diário
             const lucroPorDia = {};
@@ -1222,7 +1496,22 @@
             chartDiario.data.labels = dias;
             chartDiario.data.datasets[0].data = valoresDias;
             chartDiario.data.datasets[0].backgroundColor = coresDias;
+            
+            // Ajustar largura mínima do container do gráfico diário para evitar compressão
+            const wrapperDiario = document.getElementById('wrapperRetornoDiario');
+            const minWidthDiario = Math.max(100, dias.length * 60);
+            const targetWidthDiario = dias.length > 5 ? `${minWidthDiario}px` : '100%';
+            if (wrapperDiario.style.width !== targetWidthDiario) {
+                wrapperDiario.style.width = targetWidthDiario;
+            }
             chartDiario.update();
+            chartDiario.resize();
+
+            // Rolar automaticamente para o último dia (final do eixo X)
+            setTimeout(() => {
+                const parent = wrapperDiario.parentElement;
+                parent.scrollLeft = parent.scrollWidth;
+            }, 50);
         }
 
         function showBancaModal() {
@@ -1246,9 +1535,10 @@
             const valor = parseFloat(document.getElementById('inputBanca').value);
             if (valor && valor > 0) {
                 bancaInicial = valor;
+                dadosAlteradosSemSalvar = true;
                 fecharModal('modalBanca');
                 calcularTudo();
-                showToast('Banca inicial atualizada!', 'success');
+                showToast('Banca inicial atualizada com sucesso!', 'success');
             } else {
                 showToast('Valor de banca inválido.', 'error');
             }
@@ -1258,6 +1548,7 @@
             trades = [];
             bancaInicial = 10000;
             localStorage.removeItem('GB_PRO_DADOS');
+            dadosAlteradosSemSalvar = false;
             fecharModal('modalReset');
             calcularTudo();
             showToast('Todos os dados foram resetados com sucesso.', 'warning');
@@ -1281,6 +1572,7 @@
                 downloadAnchor.click();
                 downloadAnchor.remove();
                 
+                dadosAlteradosSemSalvar = false; // Backup físico feito com sucesso!
                 showToast('Backup gerado e baixado com sucesso!', 'success');
             } catch (err) {
                 showToast('Falha ao exportar os dados.', 'error');
@@ -1300,6 +1592,7 @@
                         bancaInicial = dados.bancaInicial || 10000;
                         document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
                         
+                        dadosAlteradosSemSalvar = false;
                         calcularTudo();
                         showToast('Backup restaurado com sucesso!', 'success');
                     } else {
@@ -1311,6 +1604,410 @@
             };
             reader.readAsText(file);
             input.value = ''; // Reset do input file
+        }
+
+        function getGoogleConfig() {
+            const savedClientId = localStorage.getItem('GB_GOOGLE_CLIENT_ID');
+            return {
+                clientId: savedClientId || DEFAULT_GOOGLE_CLIENT_ID,
+                scopes: "https://www.googleapis.com/auth/drive.file"
+            };
+        }
+
+        function inicializarGoogleAuth() {
+            const config = getGoogleConfig();
+            document.getElementById('inputGoogleClientId').value = config.clientId === DEFAULT_GOOGLE_CLIENT_ID ? "" : config.clientId;
+            
+            // Verifica se as bibliotecas do Google carregaram de forma segura
+            if (typeof google !== 'undefined') {
+                try {
+                    tokenClient = google.accounts.oauth2.initTokenClient({
+                        client_id: config.clientId,
+                        scope: config.scopes,
+                        callback: (tokenResponse) => {
+                            if (tokenResponse && tokenResponse.access_token) {
+                                googleAccessToken = tokenResponse.access_token;
+                                sessionStorage.setItem('GB_GOOGLE_TOKEN', googleAccessToken);
+                                showToast("Google Drive conectado com sucesso!", "success");
+                                atualizarInterfaceGoogle();
+                                carregarDoGoogleDrive();
+                            }
+                        }
+                    });
+                    
+                    // Tenta recuperar token ativo da sessão para sincronismo silencioso inicial
+                    const sessionToken = sessionStorage.getItem('GB_GOOGLE_TOKEN');
+                    if (sessionToken) {
+                        googleAccessToken = sessionToken;
+                        atualizarInterfaceGoogle();
+                        carregarDoGoogleDrive();
+                    }
+                } catch (e) {
+                    console.error("Erro ao iniciar Google GIS Client:", e);
+                }
+            } else {
+                setTimeout(inicializarGoogleAuth, 1000); // Tenta novamente caso a rede atrase o download da SDK
+            }
+            atualizarInterfaceGoogle();
+        }
+
+        function showGoogleDriveModal() {
+            atualizarInterfaceGoogle();
+            mostrarModal('modalGoogleDrive');
+        }
+
+        function isGoogleConnected() {
+            return googleAccessToken !== null;
+        }
+
+        function atualizarInterfaceGoogle() {
+            const connected = isGoogleConnected();
+            const btnCloud = document.getElementById('btnGoogleDrive');
+            const indStatus = document.getElementById('googleStatusIndicator');
+            const txtStatus = document.getElementById('googleStatusText');
+            const btnConnect = document.getElementById('btnGoogleConnect');
+            const btnDisconnect = document.getElementById('btnGoogleDisconnect');
+
+            // Detecta se está abrindo como arquivo local direto (file:///)
+            const isLocalFile = window.location.protocol === 'file:';
+
+            if (isLocalFile) {
+                btnCloud.className = "btn btn-cloud local-mode";
+                btnCloud.innerHTML = "⚠️ Backup Manual";
+                
+                indStatus.textContent = "🔴";
+                txtStatus.textContent = "Bloqueado pelo Navegador (Arquivo Local)";
+                txtStatus.className = "text-amber-500 font-bold";
+                
+                btnConnect.textContent = "Conexão Indisponível";
+                btnConnect.className = "btn btn-outline opacity-50 cursor-not-allowed";
+                btnConnect.disabled = true;
+                btnDisconnect.classList.add('hidden');
+                return;
+            }
+
+            if (connected) {
+                btnCloud.className = "btn btn-cloud connected";
+                btnCloud.innerHTML = "☁️ Conectado GDrive";
+                
+                indStatus.textContent = "🟢";
+                txtStatus.textContent = "Conectado";
+                txtStatus.className = "text-emerald-400 font-bold";
+                
+                btnConnect.textContent = "Sincronizar Agora";
+                btnConnect.className = "btn btn-primary";
+                btnConnect.disabled = false;
+                btnDisconnect.classList.remove('hidden');
+            } else {
+                btnCloud.className = "btn btn-cloud";
+                btnCloud.innerHTML = "☁️ Google Drive";
+                
+                indStatus.textContent = "🔴";
+                txtStatus.textContent = "Desconectado";
+                txtStatus.className = "text-rose-500 font-bold";
+                
+                btnConnect.textContent = "Conectar Conta";
+                btnConnect.className = "btn btn-primary";
+                btnConnect.disabled = false;
+                btnDisconnect.classList.add('hidden');
+            }
+        }
+
+        function actionGoogleConnect() {
+            if (window.location.protocol === 'file:') {
+                showToast("Não é possível conectar ao GDrive de um arquivo local. Use o botão Backup Manual!", "error");
+                return;
+            }
+
+            const customClientId = document.getElementById('inputGoogleClientId').value.trim();
+            const currentSaved = localStorage.getItem('GB_GOOGLE_CLIENT_ID') || DEFAULT_GOOGLE_CLIENT_ID;
+            const targetClientId = customClientId || DEFAULT_GOOGLE_CLIENT_ID;
+
+            if (targetClientId !== currentSaved) {
+                localStorage.setItem('GB_GOOGLE_CLIENT_ID', targetClientId);
+                inicializarGoogleAuth(); 
+            }
+
+            if (!tokenClient) {
+                showToast("Erro ao carregar SDK de login do Google.", "error");
+                return;
+            }
+
+            if (isGoogleConnected()) {
+                showToast("Sincronizando com a sua nuvem...", "warning");
+                carregarDoGoogleDrive();
+                salvarNoGoogleDrive(true);
+                return;
+            }
+
+            // Solicita permissão e exibe o pop-up nativo do Google de login
+            tokenClient.requestAccessToken({ prompt: 'consent' });
+        }
+
+        function actionGoogleDisconnect() {
+            googleAccessToken = null;
+            sessionStorage.removeItem('GB_GOOGLE_TOKEN');
+            showToast("Google Drive desconectado.", "warning");
+            atualizarInterfaceGoogle();
+        }
+
+        function agendarSincronismoGoogle() {
+            if (!isGoogleConnected()) return;
+            clearTimeout(googleSyncTimer);
+            googleSyncTimer = setTimeout(() => {
+                salvarNoGoogleDrive(true);
+            }, 4000); // Debounce de 4 segundos para evitar múltiplas chamadas por segundo à API
+        }
+
+        async function carregarDoGoogleDrive() {
+            if (!googleAccessToken) return;
+
+            try {
+                // Busca o arquivo "GB_Pro_Backup.json" na pasta raiz da aplicação no Drive
+                const listUrl = "https://www.googleapis.com/drive/v3/files?q=name='GB_Pro_Backup.json'+and+trashed=false&fields=files(id,name)";
+                const response = await fetch(listUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${googleAccessToken}`
+                    }
+                });
+
+                if (response.status === 200) {
+                    const data = await response.json();
+                    if (data.files && data.files.length > 0) {
+                        const fileId = data.files[0].id;
+                        
+                        // Faz o download do conteúdo real do arquivo JSON
+                        const contentUrl = `https://www.googleapis.com/drive/v3/files/${fileId}?alt=media`;
+                        const contentResponse = await fetch(contentUrl, {
+                            method: 'GET',
+                            headers: {
+                                'Authorization': `Bearer ${googleAccessToken}`
+                            }
+                        });
+
+                        if (contentResponse.status === 200) {
+                            const dados = await contentResponse.json();
+                            if (dados && dados.trades) {
+                                trades = dados.trades || [];
+                                bancaInicial = dados.bancaInicial || 10000;
+                                document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
+                                
+                                // Salva os dados localmente
+                                const dadosLocais = {
+                                    trades: trades,
+                                    bancaInicial: bancaInicial,
+                                    taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15
+                                };
+                                localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dadosLocais));
+                                
+                                dadosAlteradosSemSalvar = false;
+                                calcularTudoSemLoop();
+                                showToast("Dados restaurados do Google Drive!", "success");
+                            }
+                        }
+                    } else {
+                        console.log("Arquivo de backup não encontrado no Google Drive. Ele será criado no primeiro salvamento.");
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao sincronizar com o Google Drive:", err);
+            }
+        }
+
+        async function salvarNoGoogleDrive(mostrarToast = true) {
+            if (!googleAccessToken) return;
+
+            const dados = {
+                trades: trades,
+                bancaInicial: bancaInicial,
+                taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15
+            };
+
+            const jsonStr = JSON.stringify(dados, null, 2);
+
+            try {
+                // 1. Busca se o arquivo de backup já existe
+                const searchUrl = "https://www.googleapis.com/drive/v3/files?q=name='GB_Pro_Backup.json'+and+trashed=false&fields=files(id)";
+                const searchResponse = await fetch(searchUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${googleAccessToken}`
+                    }
+                });
+
+                if (searchResponse.status === 200) {
+                    const searchData = await searchResponse.json();
+                    
+                    if (searchData.files && searchData.files.length > 0) {
+                        // O arquivo existe, fazemos um PATCH (Update)
+                        const fileId = searchData.files[0].id;
+                        const updateUrl = `https://www.googleapis.com/upload/drive/v3/files/${fileId}?uploadType=media`;
+                        
+                        const updateResponse = await fetch(updateUrl, {
+                            method: 'PATCH',
+                            headers: {
+                                'Authorization': `Bearer ${googleAccessToken}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: jsonStr
+                        });
+
+                        if (updateResponse.status === 200 && mostrarToast) {
+                            dadosAlteradosSemSalvar = false;
+                            showToast("Backup salvo no seu Google Drive com sucesso!", "success");
+                        }
+                    } else {
+                        // O arquivo não existe, fazemos um POST multipart (Create)
+                        const metadata = {
+                            name: 'GB_Pro_Backup.json',
+                            mimeType: 'application/json'
+                        };
+
+                        const boundary = 'foo_bar_boundary';
+                        const delimiter = `\r\n--${boundary}\r\n`;
+                        const closeDelimiter = `\r\n--${boundary}--`;
+
+                        const multipartRequestBody =
+                            `${delimiter}Content-Type: application/json; charset=UTF-8\r\n\r\n${JSON.stringify(metadata)}` +
+                            `${delimiter}Content-Type: application/json\r\n\r\n${jsonStr}${closeDelimiter}`;
+
+                        const createUrl = 'https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart';
+                        
+                        const createResponse = await fetch(createUrl, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${googleAccessToken}`,
+                                'Content-Type': `multipart/related; boundary=${boundary}`
+                            },
+                            body: multipartRequestBody
+                        });
+
+                        if ((createResponse.status === 200 || createResponse.status === 201) && mostrarToast) {
+                            dadosAlteradosSemSalvar = false;
+                            showToast("Backup criado e salvo no seu Google Drive!", "success");
+                        }
+                    }
+                }
+            } catch (err) {
+                console.error("Erro ao enviar dados para o Google Drive:", err);
+            }
+        }
+
+        // Helper para sincronizar interface silenciosamente sem loops recursivos no startup
+        function calcularTudoSemLoop() {
+            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.15;
+            const capital = capitalAtual();
+            const lucroTotal = capital - bancaInicial;
+            
+            const meta = capital * 0.0075;
+            const stop = capital * 0.01;
+            
+            document.getElementById('displayMeta').textContent = '+ ' + formatarMoeda(meta, 'USD');
+            document.getElementById('displayStop').textContent = '- ' + formatarMoeda(stop, 'USD');
+            
+            if (document.activeElement !== document.getElementById('inputBancaHeader')) {
+                document.getElementById('inputBancaHeader').value = bancaInicial;
+            }
+            
+            const elLucro = document.getElementById('kpiLucro');
+            elLucro.textContent = (lucroTotal >= 0 ? '+ ' : '') + formatarMoeda(lucroTotal, 'USD');
+            elLucro.className = 'kpi-value ' + (lucroTotal >= 0 ? 'positive' : 'negative');
+            document.getElementById('kpiLucroBRL').textContent = formatarMoeda(lucroTotal * taxa, 'BRL');
+            
+            const finalizadas = trades.filter(t => t.resultado && t.resultado !== 'EMPATE');
+            const vitorias = trades.filter(t => t.resultado === 'WIN').length;
+            const winrate = finalizadas.length > 0 ? (vitorias / finalizadas.length * 100) : 0;
+            document.getElementById('kpiWinrate').textContent = winrate.toFixed(1).replace('.', ',') + '%';
+            document.getElementById('barraWinrate').style.width = Math.min(winrate, 100) + '%';
+            
+            const dLocal = new Date();
+            const hojeLocalStr = dLocal.getFullYear() + '-' + 
+                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
+                                String(dLocal.getDate()).padStart(2, '0');
+
+            const lucroHoje = trades
+                .filter(t => t.data === hojeLocalStr && t.resultado)
+                .reduce((soma, t) => soma + calcularLucro(t), 0);
+            
+            const elHoje = document.getElementById('kpiHoje');
+            elHoje.textContent = (lucroHoje >= 0 ? '+ ' : '') + formatarMoeda(lucroHoje, 'USD');
+            elHoje.className = 'kpi-value';
+            
+            const elHojeStatus = document.getElementById('kpiHojeStatus');
+            const cardHoje = document.getElementById('cardHoje');
+            
+            cardHoje.classList.remove('glow-green', 'glow-red');
+            elHoje.classList.remove('positive', 'negative');
+            
+            if (lucroHoje >= meta) {
+                elHojeStatus.textContent = '🚀 Meta batida!';
+                elHojeStatus.style.color = '#10b981';
+                cardHoje.classList.add('glow-green');
+                elHoje.classList.add('positive');
+            } else if (lucroHoje <= -stop) {
+                elHojeStatus.textContent = '🛑 Stop atingido!';
+                elHojeStatus.style.color = '#ef4444';
+                cardHoje.classList.add('glow-red');
+                elHoje.classList.add('negative');
+            } else {
+                elHojeStatus.textContent = 'Em progresso...';
+                elHojeStatus.style.color = '#64748b';
+            }
+            
+            document.getElementById('kpiCapital').textContent = formatarMoeda(capital, 'USD');
+            document.getElementById('kpiCapitalBRL').textContent = formatarMoeda(capital * taxa, 'BRL');
+            
+            const lucroBruto = trades.filter(t => t.resultado === 'WIN').reduce((s, t) => s + calcularLucro(t), 0);
+            const perdaBruta = Math.abs(trades.filter(t => t.resultado === 'LOSS').reduce((s, t) => s + calcularLucro(t), 0));
+            let pf = '0,00';
+            if (perdaBruta > 0) {
+                pf = (lucroBruto / perdaBruta).toFixed(2).replace('.', ',');
+            } else if (lucroBruto > 0) {
+                pf = 'MAX';
+            }
+            document.getElementById('kpiPF').textContent = pf;
+            
+            const roi = bancaInicial > 0 ? ((capital - bancaInicial) / bancaInicial * 100) : 0;
+            const elROI = document.getElementById('kpiROI');
+            elROI.textContent = (roi >= 0 ? '+' : '') + roi.toFixed(2).replace('.', ',') + '%';
+            elROI.className = 'kpi-value ' + (roi >= 0 ? 'positive' : 'negative');
+            
+            document.getElementById('graficoOperacoes').textContent = trades.filter(t => t.resultado).length;
+            document.getElementById('graficoMoeda').textContent = moedaGrafico;
+            
+            renderizarTabela();
+            atualizarGraficos();
+        }
+
+        // Funções para manipular a chave de acesso da Nuvem Direta
+        function copiarChaveNuvem() {
+            const input = document.getElementById('inputChaveNuvem');
+            input.select();
+            input.setSelectionRange(0, 99999); // Suporte para dispositivos móveis
+            
+            try {
+                document.execCommand('copy');
+                showToast("Chave de sincronismo copiada para a área de transferência!", "success");
+            } catch (err) {
+                showToast("Erro ao copiar chave.", "error");
+            }
+        }
+
+        async function carregarDeChaveAlternativa() {
+            const chave = document.getElementById('inputImportarChave').value.trim();
+            if (!chave) {
+                showToast("Por favor, cole uma chave válida.", "error");
+                return;
+            }
+
+            if (window.inicializarSincronismoFirestore) {
+                showToast("Conectando e buscando dados na nuvem...", "warning");
+                window.inicializarSincronismoFirestore(chave);
+                fecharModal('modalGoogleDrive');
+            } else {
+                showToast("Serviço de Nuvem Direta temporariamente indisponível.", "error");
+            }
         }
     </script>
 </body>
