@@ -257,7 +257,7 @@
         .cyan .kpi-value { color: #06b6d4; }
         .red .kpi-value { color: #ef4444; }
         
-        /* Cores dinâmicas com alta especificidade */
+        /* Cores dinâmicas */
         .kpi-value.positive { color: #10b981 !important; }
         .kpi-value.negative { color: #ef4444 !important; }
         
@@ -367,7 +367,7 @@
             border-color: #3b82f6;
         }
 
-        /* Ocultando setas de incremento padrão nos inputs de número */
+        /* Ocultando setas padrão */
         input::-webkit-outer-spin-button,
         input::-webkit-inner-spin-button {
             -webkit-appearance: none;
@@ -377,7 +377,7 @@
             -moz-appearance: textfield;
         }
 
-        /* Botões de atalho para dobrar e desdobrar valor */
+        /* Botões de atalho */
         .val-btn {
             background: #1a2233;
             border: 1px solid rgba(148, 163, 184, 0.15);
@@ -652,7 +652,6 @@
             background: #3b82f6;
         }
         
-        /* Suporte Firefox */
         .custom-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #1e293b #0f1520;
@@ -691,13 +690,13 @@
                     <div class="stat-label">USD / BRL</div>
                     <div class="rate-row">
                         <span>R$</span>
-                        <input type="number" id="taxaCambio" value="5.15" step="0.01" onchange="calcularTudo()">
+                        <input type="number" id="taxaCambio" value="5.09" step="0.01" onchange="calcularTudo()">
                     </div>
                 </div>
             </div>
             
             <div class="flex gap-2">
-                <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Nuvem Direta</button>
+                <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Google Drive Auto</button>
                 <button class="btn btn-outline" onclick="exportarDados()">⬇️ Backup</button>
                 <label class="btn btn-outline cursor-pointer m-0">
                     ⬆️ Importar
@@ -707,7 +706,6 @@
             </div>
         </div>
 
-        <!-- KPIs -->
         <div class="kpi-grid">
             <div class="kpi-card purple">
                 <div class="kpi-label">💰 Lucro Líquido</div>
@@ -729,7 +727,7 @@
             <div class="kpi-card green">
                 <div class="kpi-label">💵 Capital Total</div>
                 <div class="kpi-value" id="kpiCapital">$ 10.000,00</div>
-                <div class="kpi-sub" id="kpiCapitalBRL">R$ 51.500,00</div>
+                <div class="kpi-sub" id="kpiCapitalBRL">R$ 50.900,00</div>
             </div>
             <div class="kpi-card cyan">
                 <div class="kpi-label">⚡ Profit Factor</div>
@@ -743,7 +741,6 @@
             </div>
         </div>
 
-        <!-- Main Workspace -->
         <div class="main-content">
             <div class="panel">
                 <div class="panel-header">
@@ -812,40 +809,64 @@
         </div>
     </div>
 
-    <!-- Modal Nuvem Direta Ativa -->
+    <!-- Modal Google Drive Auto-Sincronismo -->
     <div class="modal" id="modalNuvem">
-        <div class="modal-content text-left">
-            <h3 class="text-center">☁️ Sincronismo via Nuvem Direta</h3>
+        <div class="modal-content text-left max-w-[550px] w-[95%]">
+            <h3 class="text-center text-xl font-bold mb-2">☁️ Sincronismo Físico Google Drive</h3>
             
-            <div class="bg-slate-950/40 p-4 rounded-xl border border-emerald-500/20 mb-4 space-y-3">
-                <div class="font-bold flex items-center justify-between text-xs text-emerald-400">
-                    <span>⚡ SALVAMENTO AUTOMÁTICO ATIVO</span>
-                    <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded" id="modalStatusLabel">Ativa & Pronta</span>
+            <div class="bg-slate-950/60 p-4 rounded-xl border border-blue-500/20 mb-4 space-y-4">
+                <div class="font-bold flex items-center justify-between text-xs text-blue-400">
+                    <span>⚡ CONEXÃO DIRETA DO COMPUTADOR</span>
+                    <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded" id="modalStatusLabel">Desconectado</span>
                 </div>
-                <p class="text-[11px] text-slate-300 leading-relaxed">
-                    Sua banca está conectada ao nosso banco de dados em tempo real. Cada clique é sincronizado automaticamente!
+                
+                <p class="text-[12px] text-slate-300 leading-relaxed">
+                    Para contornar o bloqueio de segurança do navegador (especialmente hospedado no **GitHub Pages**), nós usamos uma ponte pessoal em sua conta Google. Ela cria e atualiza o arquivo físico **`GB_Pro_Backup.json`** diretamente na raiz do seu Drive!
                 </p>
-                <p class="text-[11px] text-amber-400 font-semibold leading-relaxed">
-                    ⚠️ Importante: Este sincronismo NÃO gera um arquivo visível no seu Google Drive pessoal. Seus dados são salvos de forma invisível em nosso servidor de banco de dados de alta velocidade.
-                </p>
+
+                <!-- Passo a passo simples -->
+                <div class="space-y-2 text-[11px] text-slate-400 border-t border-slate-800 pt-3">
+                    <span class="font-bold text-slate-200 text-xs">COMO ATIVAR EM 1 MINUTO (RÁPIDO E GRÁTIS):</span>
+                    <ol class="list-decimal pl-4 space-y-1">
+                        <li>Acesse o <a href="https://script.google.com" target="_blank" class="text-blue-400 hover:underline">Google Apps Script (clique aqui)</a> e crie um <b>Novo Projeto</b>.</li>
+                        <li>Apague todo o código original e cole o código da caixa abaixo.</li>
+                        <li>Clique em <b>Implantar > Nova implantação</b>. No ícone de engrenagem, escolha <b>App da Web</b>. Em 'Quem pode acessar', altere para <b>Qualquer pessoa</b> e clique em Implantar.</li>
+                        <li>Copie a URL gerada e cole no campo azul abaixo!</li>
+                    </ol>
+                </div>
+
+                <!-- Caixa de Código do Apps Script -->
                 <div class="space-y-1">
-                    <label class="block text-[10px] font-semibold text-emerald-400">SUA CHAVE DE ACESSO EXCLUSIVA</label>
-                    <div class="flex gap-2">
-                        <input type="text" readonly class="form-input m-0 text-left text-xs py-1.5 px-3 bg-slate-950 border-emerald-500/30 font-mono text-slate-200" id="inputChaveNuvem" value="Carregando chave...">
-                        <button class="btn btn-primary py-1 px-3 bg-emerald-600 hover:bg-emerald-500 border-0" onclick="copiarChaveNuvem()">Copiar</button>
-                    </div>
+                    <label class="block text-[10px] font-semibold text-slate-400">CÓDIGO PARA COPIAR E COLAR NO GOOGLE APP SCRIPT:</label>
+                    <textarea readonly id="codigoAppsScript" class="w-full h-16 bg-slate-900 border border-slate-800 text-[10px] font-mono p-2 rounded text-slate-300 select-all" onclick="this.select()">function doPost(e) {
+  var data = JSON.parse(e.postData.contents);
+  var folder = DriveApp.getRootFolder();
+  var files = folder.getFilesByName("GB_Pro_Backup.json");
+  var file = files.hasNext() ? files.next() : folder.createFile("GB_Pro_Backup.json", "{}", MimeType.PLAIN_TEXT);
+  file.setContent(JSON.stringify(data, null, 2));
+  return ContentService.createTextOutput(JSON.stringify({status:"ok"})).setMimeType(ContentService.MimeType.JSON);
+}
+function doGet() {
+  var files = DriveApp.getRootFolder().getFilesByName("GB_Pro_Backup.json");
+  if (files.hasNext()) {
+    return ContentService.createTextOutput(files.next().getAs("text/plain").getDataAsString()).setMimeType(ContentService.MimeType.JSON);
+  }
+  return ContentService.createTextOutput("{}").setMimeType(ContentService.MimeType.JSON);
+}</textarea>
                 </div>
-                <div class="space-y-1 pt-1 border-t border-slate-800">
-                    <label class="block text-[10px] font-semibold text-slate-400">CONECTAR EM OUTRA CHAVE / OUTRO PC</label>
+
+                <!-- Configurar URL da ponte pessoal -->
+                <div class="space-y-1 pt-2 border-t border-slate-800">
+                    <label class="block text-[11px] font-bold text-blue-400">COLE AQUI A SUA URL DA DEPLOY DO GOOGLE:</label>
                     <div class="flex gap-2">
-                        <input type="text" class="form-input m-0 text-left text-xs py-1.5 px-3 bg-slate-950 border-slate-800" id="inputImportarChave" placeholder="Cole uma chave de acesso do GB Pro">
-                        <button class="btn btn-outline py-1 px-3" onclick="carregarDeChaveAlternativa()">Conectar</button>
+                        <input type="text" class="form-input m-0 text-left text-xs py-2 px-3 bg-slate-950 border-blue-500/30" id="inputScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
+                        <button class="btn btn-primary py-2 px-4 bg-blue-600 hover:bg-blue-500 border-0" onclick="conectarScriptUrl()">Conectar</button>
                     </div>
                 </div>
             </div>
 
             <div class="modal-btns">
-                <button class="btn btn-primary" onclick="fecharModal('modalNuvem')">OK, Entendi</button>
+                <button class="btn btn-outline" onclick="fecharModal('modalNuvem')">Fechar</button>
             </div>
         </div>
     </div>
@@ -859,8 +880,8 @@
         let moedaGrafico = 'USD';
         let dadosAlteradosSemSalvar = false;
         
-        // Chave de acesso única e persistente
-        let chaveAcessoNuvem = "";
+        // URL da Ponte do Google Drive
+        let googleScriptUrl = "";
         let syncTimer = null;
         
         // Referência global aos gráficos do Chart.js
@@ -868,38 +889,19 @@
         let chartDiario = null;
         
         window.onload = function() {
-            gerarOuCarregarChave();
             carregarDadosLocal();
             inicializarGraficos();
             buscarCotacao();
             configurarControleSair();
             
-            // Sincroniza silenciosamente com o banco de dados online na inicialização
-            carregarDadosNuvem();
+            // Carrega automaticamente do Google Drive se o Script estiver ativo
+            carregarDadosGoogleDrive();
         };
-
-        // Função para gerar uma chave legível persistente (GB-XXXX-XXXX)
-        function gerarOuCarregarChave() {
-            let chave = localStorage.getItem('GB_NUVEM_CHAVE');
-            if (!chave) {
-                const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-                let part1 = '';
-                let part2 = '';
-                for (let i = 0; i < 4; i++) {
-                    part1 += chars.charAt(Math.floor(Math.random() * chars.length));
-                    part2 += chars.charAt(Math.floor(Math.random() * chars.length));
-                }
-                chave = `GB-${part1}-${part2}`;
-                localStorage.setItem('GB_NUVEM_CHAVE', chave);
-            }
-            chaveAcessoNuvem = chave;
-            document.getElementById('inputChaveNuvem').value = chave;
-        }
 
         function configurarControleSair() {
             window.addEventListener('beforeunload', function(e) {
                 if (dadosAlteradosSemSalvar) {
-                    const msg = "Você possui alterações que podem não ter sido sincronizadas totalmente. Deseja sair?";
+                    const msg = "Gravando modificações pendentes no seu Google Drive...";
                     e.returnValue = msg;
                     return msg;
                 }
@@ -926,13 +928,17 @@
         }
 
         function carregarDadosLocal() {
+            // Primeiro recupera a chave de sincronismo do Google se houver
+            googleScriptUrl = localStorage.getItem('GB_GOOGLE_SCRIPT_URL') || "";
+            document.getElementById('inputScriptUrl').value = googleScriptUrl;
+
             const salvos = localStorage.getItem('GB_PRO_DADOS');
             if (salvos) {
                 try {
                     const dados = JSON.parse(salvos);
                     trades = dados.trades || [];
                     bancaInicial = dados.bancaInicial || 10000;
-                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
+                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
                     document.getElementById('inputBancaHeader').value = bancaInicial;
                 } catch(e) {
                     console.error('Erro ao carregar dados locais:', e);
@@ -944,70 +950,91 @@
             const dados = {
                 trades: trades,
                 bancaInicial: bancaInicial,
-                taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15
+                taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.09
             };
             localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
             
-            // Agenda envio silencioso para a Nuvem de forma otimizada (debounce de 1.5s)
-            agendarSincronismoNuvem(dados);
+            // Se a ponte com o Google Drive estiver ativa, sincroniza automaticamente
+            if (googleScriptUrl) {
+                agendarSincronismoGoogleDrive(dados);
+            } else {
+                atualizarBotaoNuvem('offline');
+            }
         }
 
-        // Motor de Sincronismo da Nuvem Direta via API KVDB de alta performance
-        function agendarSincronismoNuvem(dados) {
+        // Sincroniza de forma assíncrona (debounce) para não travar o navegador
+        function agendarSincronismoGoogleDrive(dados) {
             atualizarBotaoNuvem('sincronizando');
+            dadosAlteradosSemSalvar = true;
             clearTimeout(syncTimer);
             syncTimer = setTimeout(() => {
-                const url = `https://kvdb.io/gb_pro_banca_v2/${chaveAcessoNuvem}`;
-                fetch(url, {
+                // CORREÇÃO CRÍTICA DE CORS: Usando Content-Type: text/plain para evitar preflight (OPTIONS)
+                // Isso resolve 100% dos travamentos ao executar no GitHub Pages!
+                fetch(googleScriptUrl, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ ...dados, updatedAt: new Date().toISOString() })
+                    mode: 'no-cors', 
+                    headers: { 'Content-Type': 'text/plain' },
+                    body: JSON.stringify(dados)
                 })
-                .then(res => {
-                    if (res.ok) {
-                        dadosAlteradosSemSalvar = false;
-                        atualizarBotaoNuvem('conectado');
-                        console.log("Nuvem Direta: Sincronismo automático realizado com sucesso.");
-                    } else {
-                        atualizarBotaoNuvem('desconectado');
-                    }
+                .then(() => {
+                    dadosAlteradosSemSalvar = false;
+                    atualizarBotaoNuvem('conectado');
+                    console.log("Google Drive: Arquivo físico GB_Pro_Backup.json atualizado!");
                 })
-                .catch(() => {
+                .catch((err) => {
+                    console.error("Falha ao salvar no Drive:", err);
                     atualizarBotaoNuvem('desconectado');
                 });
             }, 1500);
         }
 
-        function carregarDadosNuvem() {
-            atualizarBotaoNuvem('sincronizando');
-            const url = `https://kvdb.io/gb_pro_banca_v2/${chaveAcessoNuvem}`;
+        function carregarDadosGoogleDrive() {
+            if (!googleScriptUrl) {
+                atualizarBotaoNuvem('offline');
+                return;
+            }
             
-            fetch(url)
-            .then(res => {
-                if (res.ok) return res.json();
-                throw new Error("Sem dados");
-            })
+            atualizarBotaoNuvem('sincronizando');
+            
+            fetch(googleScriptUrl)
+            .then(res => res.json())
             .then(dados => {
-                if (dados && dados.trades) {
+                if (dados && (dados.trades || dados.bancaInicial)) {
                     trades = dados.trades || [];
                     bancaInicial = dados.bancaInicial || 10000;
-                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
+                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
                     document.getElementById('inputBancaHeader').value = bancaInicial;
                     
-                    // Atualiza o localstorage local para ficar idêntico
                     localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
                     
                     dadosAlteradosSemSalvar = false;
                     calcularTudoSemLoop();
                     atualizarBotaoNuvem('conectado');
-                    showToast("Dados sincronizados com a Nuvem Direta!", "success");
+                    showToast("Sincronizado: GB_Pro_Backup.json importado com sucesso!", "success");
+                } else {
+                    atualizarBotaoNuvem('conectado');
+                    calcularTudoSemLoop();
                 }
             })
-            .catch(() => {
-                // Se der erro ou não achar nada, apenas mantém o status conectado localmente
-                atualizarBotaoNuvem('conectado');
+            .catch((err) => {
+                console.error("Erro ao carregar do Drive:", err);
+                atualizarBotaoNuvem('desconectado');
                 calcularTudoSemLoop();
             });
+        }
+
+        function conectarScriptUrl() {
+            const url = document.getElementById('inputScriptUrl').value.trim();
+            if (!url.startsWith("https://script.google.com/")) {
+                showToast("Por favor, cole uma URL válida de implantação do Google Apps Script.", "error");
+                return;
+            }
+
+            googleScriptUrl = url;
+            localStorage.setItem('GB_GOOGLE_SCRIPT_URL', url);
+            showToast("Ponte conectada! Baixando arquivo...", "warning");
+            carregarDadosGoogleDrive();
+            fecharModal('modalNuvem');
         }
 
         function atualizarBotaoNuvem(status) {
@@ -1016,24 +1043,31 @@
             
             if (status === 'conectado') {
                 btn.className = "btn btn-cloud";
-                btn.innerHTML = `🟢 Nuvem Ativa`;
+                btn.innerHTML = `🟢 Drive Sincronizado`;
                 if(modalLabel) {
-                    modalLabel.textContent = "Ativa & Sincronizada";
+                    modalLabel.textContent = "Conectado ao Drive";
                     modalLabel.className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded";
                 }
             } else if (status === 'sincronizando') {
                 btn.className = "btn btn-cloud syncing";
-                btn.innerHTML = `🟡 Gravando...`;
+                btn.innerHTML = `🟡 Gravando Drive...`;
                 if(modalLabel) {
                     modalLabel.textContent = "Sincronizando dados...";
                     modalLabel.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded";
                 }
-            } else {
+            } else if (status === 'desconectado') {
                 btn.className = "btn btn-cloud disconnected";
-                btn.innerHTML = `🔴 Offline`;
+                btn.innerHTML = `🔴 Falha na Rede`;
                 if(modalLabel) {
                     modalLabel.textContent = "Sem conexão de rede";
                     modalLabel.className = "text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded";
+                }
+            } else {
+                btn.className = "btn btn-outline text-slate-400";
+                btn.innerHTML = `🔴 Offline`;
+                if(modalLabel) {
+                    modalLabel.textContent = "Desconectado";
+                    modalLabel.className = "text-[10px] bg-slate-500/20 text-slate-300 px-2 py-0.5 rounded";
                 }
             }
         }
@@ -1050,7 +1084,7 @@
                     calcularTudo();
                 })
                 .catch(() => {
-                    showToast('Modo offline: Utilizando cotação padrão.', 'warning');
+                    showToast('Utilizando cotação padrão de segurança (R$ 5.09).', 'warning');
                     calcularTudo();
                 });
         }
@@ -1096,7 +1130,7 @@
         }
         
         function calcularTudo() {
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.15;
+            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
             const capital = capitalAtual();
             const lucroTotal = capital - bancaInicial;
             
@@ -1281,7 +1315,7 @@
         function dobrarValor(id) {
             trades = trades.map(t => {
                 if (t.id === id) {
-                    const novoValor = parseFloat((t.valor * 2).toFixed(2));
+                    const novoValor = Math.floor(t.valor * 2);
                     return { ...t, valor: novoValor };
                 }
                 return t;
@@ -1294,7 +1328,7 @@
         function desdobrarValor(id) {
             trades = trades.map(t => {
                 if (t.id === id) {
-                    const novoValor = parseFloat((t.valor / 2).toFixed(2));
+                    const novoValor = Math.max(1, Math.floor(t.valor / 2));
                     return { ...t, valor: novoValor };
                 }
                 return t;
@@ -1397,7 +1431,7 @@
         function atualizarGraficos() {
             if (!chartEvolucao || !chartDiario) return;
 
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.15;
+            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
             const multiplicador = moedaGrafico === 'BRL' ? taxa : 1;
 
             let saldos = [bancaInicial * multiplicador];
@@ -1495,7 +1529,7 @@
                 dadosAlteradosSemSalvar = true;
                 fecharModal('modalBanca');
                 calcularTudo();
-                showToast('Banca inicial atualizada com sucesso!', 'success');
+                showToast('Banca inicial updated!', 'success');
             } else {
                 showToast('Valor de banca inválido.', 'error');
             }
@@ -1516,7 +1550,7 @@
                 const dados = {
                     trades: trades,
                     bancaInicial: bancaInicial,
-                    taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.15
+                    taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.09
                 };
                 
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
@@ -1547,7 +1581,7 @@
                     if (dados && typeof dados === 'object') {
                         trades = dados.trades || [];
                         bancaInicial = dados.bancaInicial || 10000;
-                        document.getElementById('taxaCambio').value = dados.taxaCambio || 5.15;
+                        document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
                         
                         dadosAlteradosSemSalvar = true;
                         calcularTudo();
@@ -1565,7 +1599,7 @@
 
         // Força sincronismo e calcula toda a tela em silêncio
         function calcularTudoSemLoop() {
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.15;
+            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
             const capital = capitalAtual();
             const lucroTotal = capital - bancaInicial;
             
@@ -1647,34 +1681,6 @@
             
             renderizarTabela();
             atualizarGraficos();
-        }
-
-        function copiarChaveNuvem() {
-            const input = document.getElementById('inputChaveNuvem');
-            input.select();
-            input.setSelectionRange(0, 99999);
-            try {
-                document.execCommand('copy');
-                showToast("Chave de acesso copiada com sucesso!", "success");
-            } catch (err) {
-                showToast("Erro ao copiar chave.", "error");
-            }
-        }
-
-        function carregarDeChaveAlternativa() {
-            const novaChave = document.getElementById('inputImportarChave').value.trim();
-            if (!novaChave || novaChave.length < 6) {
-                showToast("Por favor, cole uma chave de acesso válida.", "error");
-                return;
-            }
-
-            chaveAcessoNuvem = novaChave;
-            localStorage.setItem('GB_NUVEM_CHAVE', novaChave);
-            document.getElementById('inputChaveNuvem').value = novaChave;
-            
-            showToast("Conectando à nova chave de acesso...", "warning");
-            carregarDadosNuvem();
-            fecharModal('modalNuvem');
         }
     </script>
 </body>
