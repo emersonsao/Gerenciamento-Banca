@@ -697,7 +697,7 @@
             </div>
             
             <div class="flex gap-2">
-                <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Conectando...</button>
+                <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Nuvem Direta</button>
                 <button class="btn btn-outline" onclick="exportarDados()">⬇️ Backup</button>
                 <label class="btn btn-outline cursor-pointer m-0">
                     ⬆️ Importar
@@ -815,16 +815,18 @@
     <!-- Modal Nuvem Direta Ativa -->
     <div class="modal" id="modalNuvem">
         <div class="modal-content text-left">
-            <h3 class="text-center">☁️ Nuvem Ativa Automática</h3>
+            <h3 class="text-center">☁️ Sincronismo via Nuvem Direta</h3>
             
             <div class="bg-slate-950/40 p-4 rounded-xl border border-emerald-500/20 mb-4 space-y-3">
                 <div class="font-bold flex items-center justify-between text-xs text-emerald-400">
-                    <span>⚡ CONEXÃO 100% GARANTIDA</span>
+                    <span>⚡ SALVAMENTO AUTOMÁTICO ATIVO</span>
                     <span class="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded" id="modalStatusLabel">Ativa & Pronta</span>
                 </div>
                 <p class="text-[11px] text-slate-300 leading-relaxed">
-                    Sua banca agora está conectada com o nosso banco de dados em tempo real. Cada clique é sincronizado automaticamente! 
-                    Para abrir o seu histórico em outro computador, use a sua **Chave de Acesso** exclusiva abaixo:
+                    Sua banca está conectada ao nosso banco de dados em tempo real. Cada clique é sincronizado automaticamente!
+                </p>
+                <p class="text-[11px] text-amber-400 font-semibold leading-relaxed">
+                    ⚠️ Importante: Este sincronismo NÃO gera um arquivo visível no seu Google Drive pessoal. Seus dados são salvos de forma invisível em nosso servidor de banco de dados de alta velocidade.
                 </p>
                 <div class="space-y-1">
                     <label class="block text-[10px] font-semibold text-emerald-400">SUA CHAVE DE ACESSO EXCLUSIVA</label>
@@ -834,7 +836,7 @@
                     </div>
                 </div>
                 <div class="space-y-1 pt-1 border-t border-slate-800">
-                    <label class="block text-[10px] font-semibold text-slate-400">CONECTAR EM OUTRA CHAVE</label>
+                    <label class="block text-[10px] font-semibold text-slate-400">CONECTAR EM OUTRA CHAVE / OUTRO PC</label>
                     <div class="flex gap-2">
                         <input type="text" class="form-input m-0 text-left text-xs py-1.5 px-3 bg-slate-950 border-slate-800" id="inputImportarChave" placeholder="Cole uma chave de acesso do GB Pro">
                         <button class="btn btn-outline py-1 px-3" onclick="carregarDeChaveAlternativa()">Conectar</button>
@@ -843,7 +845,7 @@
             </div>
 
             <div class="modal-btns">
-                <button class="btn btn-primary" onclick="fecharModal('modalNuvem')">OK, Fechar</button>
+                <button class="btn btn-primary" onclick="fecharModal('modalNuvem')">OK, Entendi</button>
             </div>
         </div>
     </div>
