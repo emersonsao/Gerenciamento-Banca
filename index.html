@@ -1203,6 +1203,7 @@
                 </ol>
                 <textarea readonly id="codigoAppsScript" class="w-full h-20 mt-2 bg-slate-900 border border-slate-800 text-[10px] font-mono p-2 rounded text-slate-300 select-all" onclick="this.select()">function doPost(e) {
   var data = JSON.parse(e.postData.contents);
+  data.ts = new Date().getTime();
   var folder = DriveApp.getRootFolder();
   var files = folder.getFilesByName("GB_Pro_Backup.json");
   var file = files.hasNext() ? files.next() : folder.createFile("GB_Pro_Backup.json", "{}", MimeType.PLAIN_TEXT);
@@ -1257,6 +1258,9 @@ function doGet() {
         let googleScriptUrl = "";
         let syncTimer = null;
         let debounceTimer = null;
+        let pollTimer = null;        // timer do polling ao vivo com o Drive
+        let ultimoHashDrive = "";    // hash do último JSON recebido do Drive (detecta mudanças)
+        let cfgLocal = { meta: 0.75, stop: 1.00, entrada: 0.25, payout: 89 }; // config local persistida
         let cotacaoManual = false;   // true se o usuário editou a cotação manualmente
        
         // Referência global aos gráficos do Chart.js
@@ -1275,6 +1279,9 @@ function doGet() {
             buscarCotacao(true);
             // Atualização automática da cotação a cada 10 minutos (forçada)
             setInterval(() => buscarCotacao(true), 10 * 60 * 1000);
+
+            // Sincronização ao vivo: busca alterações de outros computadores no Drive
+            iniciarSincronizacaoAutomatica();
         };
 
         function configurarControleSair() {
@@ -1331,10 +1338,9 @@ function doGet() {
             if (inputUrl) inputUrl.value = googleScriptUrl;
 
             const cfg = JSON.parse(localStorage.getItem('GB_PRO_CONFIG') || '{}');
-            if (typeof cfg.meta === 'number') cfgMetaDiaria = cfg.meta;
-            if (typeof cfg.stop === 'number') cfgStopDiario = cfg.stop;
-            if (typeof cfg.entrada === 'number') cfgPctEntrada = cfg.entrada;
-            if (typeof cfg.payout === 'number') cfgPayout = cfg.payout;
+            aplicarConfig(cfg);
+            // Guarda a config local para reaplicar caso o Drive não devolva config
+            cfgLocal = coletarConfig();
 
             const salvos = localStorage.getItem('GB_PRO_DADOS');
             if (salvos) {
@@ -1342,6 +1348,7 @@ function doGet() {
                     const dados = JSON.parse(salvos);
                     trades = dados.trades || [];
                     bancaInicial = dados.bancaInicial || 0;
+                    if (dados.config) aplicarConfig(dados.config);
                     const taxaSalva = parseFloat(dados.taxaCambio);
                     const ultimaCotacao = parseFloat(localStorage.getItem('GB_COTACAO'));
                     const taxaInicial = (!isNaN(taxaSalva) && taxaSalva > 0) ? taxaSalva
@@ -1363,11 +1370,24 @@ function doGet() {
             if (horaEl) horaEl.textContent = horaSalva ? 'Última: ' + horaSalva : '-';
         }
        
+        function coletarConfig() {
+            return { meta: cfgMetaDiaria, stop: cfgStopDiario, entrada: cfgPctEntrada, payout: cfgPayout };
+        }
+
+        function aplicarConfig(cfg) {
+            if (!cfg || typeof cfg !== 'object') return;
+            if (typeof cfg.meta === 'number') cfgMetaDiaria = cfg.meta;
+            if (typeof cfg.stop === 'number') cfgStopDiario = cfg.stop;
+            if (typeof cfg.entrada === 'number') cfgPctEntrada = cfg.entrada;
+            if (typeof cfg.payout === 'number') cfgPayout = cfg.payout;
+        }
+
         function salvarDados() {
             const dados = {
                 trades: trades,
                 bancaInicial: bancaInicial,
-                taxaCambio: lerTaxa()
+                taxaCambio: lerTaxa(),
+                config: coletarConfig()
             };
             localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
 
@@ -1393,6 +1413,7 @@ function doGet() {
                 })
                 .then(() => {
                     dadosAlteradosSemSalvar = false;
+                    ultimoHashDrive = hashDados(dados.trades, dados.bancaInicial, dados.taxaCambio);
                     localStorage.setItem('GB_ULTIMA_SYNC', Date.now());
                     atualizarBotaoNuvem('conectado');
                 })
@@ -1414,14 +1435,25 @@ function doGet() {
             fetch(googleScriptUrl, { mode: 'cors', redirect: 'follow' })
             .then(res => res.json())
             .then(dados => {
+                dados = dados || {};
+                // Sempre reaplica a config local (o Drive pode não trazer config)
+                aplicarConfig(cfgLocal);
                 if (dados && (dados.trades || dados.bancaInicial)) {
-                    trades = dados.trades || [];
-                    bancaInicial = dados.bancaInicial || 10000;
-                    document.getElementById('taxaCambio').value = formatarTaxa(dados.taxaCambio || 5.09);
+                    trades = Array.isArray(dados.trades) ? dados.trades : [];
+                    bancaInicial = (typeof dados.bancaInicial === 'number') ? dados.bancaInicial : 10000;
+                    if (dados.taxaCambio) {
+                        document.getElementById('taxaCambio').value = formatarTaxa(dados.taxaCambio);
+                    }
                     document.getElementById('inputBancaHeader').value = bancaInicial;
-                   
-                    localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
-                   
+
+                    ultimoHashDrive = hashDados(trades, bancaInicial, lerTaxa());
+                    localStorage.setItem('GB_PRO_DADOS', JSON.stringify({
+                        trades: trades,
+                        bancaInicial: bancaInicial,
+                        taxaCambio: lerTaxa(),
+                        config: coletarConfig()
+                    }));
+
                     dadosAlteradosSemSalvar = false;
                     calcularTudo(false);
                     atualizarBotaoNuvem('conectado');
@@ -1448,7 +1480,9 @@ function doGet() {
             googleScriptUrl = url;
             localStorage.setItem('GB_GOOGLE_SCRIPT_URL', url);
             showToast("Ponte conectada! Baixando arquivo...", "warning");
+
             carregarDadosGoogleDrive();
+            iniciarSincronizacaoAutomatica();
             fecharModal('modalNuvem');
         }
 
@@ -1536,8 +1570,71 @@ function doGet() {
             localStorage.removeItem('GB_GOOGLE_SCRIPT_URL');
             const iu = document.getElementById('inputScriptUrl');
             if (iu) iu.value = "";
+            pararSincronizacaoAutomatica();
             atualizarBotaoNuvem('offline');
             showToast("Desconectado do Google Drive.", "warning");
+        }
+
+        // Gera um hash leve dos dados para detectar mudanças remotas sem comparar objetos
+        function hashDados(lista, banca, taxa) {
+            try {
+                return btoa(unescape(encodeURIComponent(JSON.stringify({ t: lista, b: banca, c: taxa })))).slice(0, 64);
+            } catch (e) {
+                return String(lista.length) + '|' + banca + '|' + taxa;
+            }
+        }
+
+        // Inicia o polling ao vivo: busca o Drive periodicamente para detectar outro computador
+        function iniciarSincronizacaoAutomatica() {
+            pararSincronizacaoAutomatica();
+            if (!googleScriptUrl) return;
+            ultimoHashDrive = hashDados(trades, bancaInicial, lerTaxa());
+            pollTimer = setInterval(sincronizarDrive, 20000);
+        }
+
+        function pararSincronizacaoAutomatica() {
+            if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+        }
+
+        // Busca o Drive e, se houver mudança de outro PC, aplica localmente
+        function sincronizarDrive() {
+            if (!googleScriptUrl) return;
+            // Não sobrescreve enquanto há edição local pendente de envio
+            if (dadosAlteradosSemSalvar) return;
+
+            fetch(googleScriptUrl, { mode: 'cors', redirect: 'follow', cache: 'no-store' })
+                .then(res => res.json())
+                .then(dados => {
+                    dados = dados || {};
+                    if (!dados.trades && !dados.bancaInicial) return;
+
+                    const remoto = Array.isArray(dados.trades) ? dados.trades : [];
+                    const bancaRemota = (typeof dados.bancaInicial === 'number') ? dados.bancaInicial : bancaInicial;
+                    const taxaRemota = dados.taxaCambio ? dados.taxaCambio : lerTaxa();
+                    const hashRemoto = hashDados(remoto, bancaRemota, taxaRemota);
+
+                    if (hashRemoto === ultimoHashDrive) return; // nada mudou
+
+                    trades = remoto;
+                    bancaInicial = bancaRemota;
+                    if (dados.taxaCambio) {
+                        document.getElementById('taxaCambio').value = formatarTaxa(taxaRemota);
+                    }
+                    document.getElementById('inputBancaHeader').value = bancaInicial;
+                    aplicarConfig(cfgLocal);
+
+                    ultimoHashDrive = hashRemoto;
+                    localStorage.setItem('GB_PRO_DADOS', JSON.stringify({
+                        trades: trades,
+                        bancaInicial: bancaInicial,
+                        taxaCambio: lerTaxa(),
+                        config: coletarConfig()
+                    }));
+
+                    calcularTudo(false);
+                    atualizarBotaoNuvem('conectado');
+                })
+                .catch(() => { /* mantém estado atual em caso de falha de rede */ });
         }
        
         function buscarCotacao(forcar = false) {
@@ -2210,12 +2307,16 @@ function doGet() {
             cfgPayout = payout;
 
             localStorage.setItem('GB_PRO_CONFIG', JSON.stringify({ meta: cfgMetaDiaria, stop: cfgStopDiario, entrada: cfgPctEntrada, payout: cfgPayout }));
+            cfgLocal = coletarConfig();
             document.getElementById('inputBancaHeader').value = bancaInicial;
 
             dadosAlteradosSemSalvar = true;
             fecharModal('modalConfig');
             calcularTudo(true);
-            showToast('Valores padrão salvos!', 'success');
+            const cfgSalva = coletarConfig();
+            showToast('Valores padrão salvos! Banca: ' + formatarMoeda(bancaInicial, 'USD') +
+                ' | Meta: ' + cfgSalva.meta + '% | Stop: ' + cfgSalva.stop + '% | Entrada: ' + cfgSalva.entrada +
+                '% | Payout: ' + cfgSalva.payout + '%', 'success');
         }
 
         function showResetModal() {
