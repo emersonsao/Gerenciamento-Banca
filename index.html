@@ -14,20 +14,26 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+       
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0e17;
             color: #f8fafc;
             min-height: 100vh;
             padding: 16px;
+            overflow-x: hidden;
         }
-        
+       
+        html {
+            scroll-behavior: smooth;
+        }
+       
         .container {
             max-width: 1400px;
             margin: 0 auto;
+            width: 100%;
         }
-        
+       
         /* Header */
         .header {
             display: flex;
@@ -41,14 +47,15 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        
+       
         .brand {
             display: flex;
             align-items: center;
             gap: 12px;
             cursor: pointer;
+            user-select: none;
         }
-        
+       
         .logo {
             width: 44px;
             height: 44px;
@@ -58,13 +65,14 @@
             align-items: center;
             justify-content: center;
             font-size: 22px;
+            flex-shrink: 0;
         }
-        
+       
         .brand h1 {
             font-size: 18px;
             font-weight: 700;
         }
-        
+       
         .pro-badge {
             background: linear-gradient(90deg, #10b981, #059669);
             color: white;
@@ -73,53 +81,61 @@
             border-radius: 4px;
             margin-left: 4px;
         }
-        
+       
         .brand p {
             font-size: 12px;
             color: #94a3b8;
             margin-top: 2px;
         }
-        
+       
         /* Stats */
         .header-stats {
             display: flex;
             gap: 12px;
             flex-wrap: wrap;
+            align-items: center;
         }
-        
+       
         .stat-box {
             background: #1a2233;
             border-radius: 10px;
             padding: 12px 16px;
             min-width: 110px;
+            transition: transform 0.2s ease;
         }
-        
+       
+        .stat-box:hover {
+            transform: translateY(-2px);
+        }
+       
         .stat-label {
             font-size: 10px;
             color: #64748b;
             text-transform: uppercase;
             margin-bottom: 4px;
+            letter-spacing: 0.5px;
         }
-        
+       
         .stat-value {
             font-size: 18px;
             font-weight: 700;
+            transition: all 0.3s ease;
         }
-        
+       
         .positive { color: #10b981; }
         .negative { color: #ef4444; }
-        
+       
         .rate-row {
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        
+       
         .rate-row span {
             color: #64748b;
             font-size: 13px;
         }
-        
+       
         .rate-row input {
             width: 70px;
             background: transparent;
@@ -128,8 +144,77 @@
             font-size: 16px;
             font-weight: 700;
             outline: none;
+            border-bottom: 1px solid transparent;
+            transition: border-color 0.2s;
         }
-        
+       
+        .rate-row input:focus {
+            border-bottom-color: #3b82f6;
+        }
+
+        .header-buttons {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+       
+        /* Responsividade do Header */
+        @media (max-width: 1024px) {
+            .header {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-stats {
+                width: 100%;
+                justify-content: space-between;
+            }
+            .stat-box {
+                flex: 1;
+                min-width: 80px;
+            }
+            .header-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 8px;
+            }
+            .header {
+                padding: 12px 14px;
+                gap: 12px;
+            }
+            .brand h1 {
+                font-size: 16px;
+            }
+            .header-stats {
+                gap: 8px;
+            }
+            .stat-box {
+                min-width: 60px;
+                padding: 8px 10px;
+            }
+            .stat-value {
+                font-size: 14px;
+            }
+            .stat-label {
+                font-size: 9px;
+            }
+            .header-buttons {
+                flex-wrap: wrap;
+                gap: 8px;
+            }
+            .btn {
+                padding: 8px 12px;
+                font-size: 11px;
+                flex: 1;
+                justify-content: center;
+                min-width: 0;
+            }
+        }
+       
         /* Buttons */
         .btn {
             padding: 10px 16px;
@@ -141,36 +226,66 @@
             display: inline-flex;
             align-items: center;
             gap: 6px;
-            transition: all 0.2s;
+            transition: all 0.2s ease;
+            white-space: nowrap;
+            position: relative;
+            overflow: hidden;
         }
-        
+       
+        .btn:active {
+            transform: scale(0.97);
+        }
+       
         .btn-outline {
             background: #1a2233;
             color: #94a3b8;
             border: 1px solid rgba(148, 163, 184, 0.1);
         }
-        
+       
         .btn-outline:hover {
             background: #0f1520;
             color: #f8fafc;
+            border-color: rgba(148, 163, 184, 0.3);
         }
-        
+       
         .btn-danger {
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
+            border: 1px solid rgba(239, 68, 68, 0.2);
         }
-        
+       
         .btn-danger:hover {
             background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.4);
         }
-        
+       
         .btn-primary {
             background: linear-gradient(90deg, #3b82f6, #2563eb);
             color: white;
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            position: relative;
+            overflow: hidden;
         }
-        
+       
+        .btn-primary::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
+            transition: left 0.5s;
+        }
+       
+        .btn-primary:hover::after {
+            left: 100%;
+        }
+       
         .btn-primary:hover {
-            opacity: 0.9;
+            opacity: 0.95;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
         }
 
         .btn-cloud {
@@ -195,7 +310,29 @@
             color: #f87171;
             border: 1px solid rgba(239, 68, 68, 0.3);
         }
-        
+
+        .btn-emerald {
+            background: rgba(16, 185, 129, 0.12);
+            color: #34d399;
+            border: 1px solid rgba(16, 185, 129, 0.3);
+        }
+
+        .btn-emerald:hover {
+            background: rgba(16, 185, 129, 0.22);
+            color: #a7f3d0;
+        }
+
+        .btn-rose {
+            background: rgba(244, 63, 94, 0.12);
+            color: #fb7185;
+            border: 1px solid rgba(244, 63, 94, 0.3);
+        }
+
+        .btn-rose:hover {
+            background: rgba(244, 63, 94, 0.22);
+            color: #fecdd3;
+        }
+       
         /* KPI Grid */
         .kpi-grid {
             display: grid;
@@ -203,15 +340,19 @@
             gap: 14px;
             margin-bottom: 20px;
         }
-        
+       
         @media (max-width: 1400px) {
             .kpi-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        
+       
         @media (max-width: 768px) {
-            .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+            .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }
-        
+
+        @media (max-width: 480px) {
+            .kpi-grid { grid-template-columns: 1fr; }
+        }
+       
         .kpi-card {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.08);
@@ -220,8 +361,15 @@
             position: relative;
             overflow: hidden;
             transition: all 0.4s ease;
+            cursor: default;
         }
-        
+       
+        .kpi-card:hover {
+            transform: translateY(-2px);
+            border-color: rgba(148, 163, 184, 0.2);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+        }
+       
         .kpi-card::before {
             content: '';
             position: absolute;
@@ -230,68 +378,71 @@
             width: 4px;
             height: 100%;
         }
-        
+       
         .purple::before { background: linear-gradient(180deg, #8b5cf6, transparent); }
         .blue::before { background: linear-gradient(180deg, #3b82f6, transparent); }
         .orange::before { background: linear-gradient(180deg, #f97316, transparent); }
         .green::before { background: linear-gradient(180deg, #10b981, transparent); }
         .cyan::before { background: linear-gradient(180deg, #06b6d4, transparent); }
         .red::before { background: linear-gradient(180deg, #ef4444, transparent); }
-        
+       
         .kpi-label {
             font-size: 11px;
             color: #64748b;
             text-transform: uppercase;
             margin-bottom: 6px;
+            letter-spacing: 0.5px;
         }
-        
+       
         .kpi-value {
             font-size: 24px;
             font-weight: 800;
+            transition: all 0.3s ease;
         }
-        
+       
         .purple .kpi-value { color: #8b5cf6; }
         .blue .kpi-value { color: #3b82f6; }
         .orange .kpi-value { color: #f97316; }
         .green .kpi-value { color: #10b981; }
         .cyan .kpi-value { color: #06b6d4; }
         .red .kpi-value { color: #ef4444; }
-        
+       
         /* Cores dinâmicas */
         .kpi-value.positive { color: #10b981 !important; }
         .kpi-value.negative { color: #ef4444 !important; }
-        
+       
         .kpi-sub {
             font-size: 12px;
             color: #64748b;
             margin-top: 4px;
         }
-        
+       
         .progress-bar {
             height: 4px;
             background: #1a2233;
             border-radius: 2px;
             margin-top: 10px;
+            overflow: hidden;
         }
-        
+       
         .progress-fill {
             height: 100%;
             background: #10b981;
             border-radius: 2px;
-            transition: width 0.3s;
+            transition: width 0.5s ease;
         }
-        
+       
         /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
             gap: 16px;
         }
-        
+       
         @media (max-width: 1200px) {
             .main-content { grid-template-columns: minmax(0, 1fr); }
         }
-        
+       
         .panel {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.08);
@@ -299,35 +450,82 @@
             padding: 18px;
             min-width: 0;
         }
-        
+       
         .panel-header {
             display: flex;
             justify-content: space-between;
             align-items: center;
             margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 8px;
         }
-        
+       
+        @media (max-width: 640px) {
+            .panel {
+                padding: 14px;
+                border-radius: 12px;
+            }
+            .panel-header {
+                margin-bottom: 12px;
+            }
+            .panel-title {
+                font-size: 12px;
+            }
+        }
+       
         .panel-title {
             font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+       
         /* Table */
         .table-container {
             overflow-x: auto;
             overflow-y: auto;
             max-height: 520px;
             -webkit-overflow-scrolling: touch;
+            border-radius: 8px;
+            position: relative;
         }
-        
+       
+        .table-loading {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(10, 14, 23, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 20;
+            backdrop-filter: blur(2px);
+            border-radius: 8px;
+        }
+       
+        .table-loading::after {
+            content: '';
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(148, 163, 184, 0.1);
+            border-top-color: #3b82f6;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+       
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+       
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
+            min-width: 700px;
         }
-        
+       
         th {
             text-align: center;
             padding: 12px 8px;
@@ -339,19 +537,21 @@
             position: sticky;
             top: 0;
             z-index: 10;
+            white-space: nowrap;
         }
-        
+       
         td {
             padding: 10px 8px;
             border-bottom: 1px solid rgba(148, 163, 184, 0.08);
             text-align: center;
             vertical-align: middle;
+            white-space: nowrap;
         }
-        
+       
         tr:hover {
             background: rgba(59, 130, 246, 0.03);
         }
-        
+       
         .trade-input {
             background: #0f1520;
             border: 1px solid rgba(148, 163, 184, 0.1);
@@ -361,10 +561,12 @@
             font-size: 12px;
             outline: none;
             text-align: center;
+            transition: border-color 0.2s, box-shadow 0.2s;
         }
-        
+       
         .trade-input:focus {
             border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
         /* Ocultando setas padrão */
@@ -375,6 +577,17 @@
         }
         input[type=number] {
             -moz-appearance: textfield;
+        }
+
+        /* Ícone visível do seletor de data/hora */
+        input[type="datetime-local"]::-webkit-calendar-picker-indicator {
+            filter: invert(0.7);
+            opacity: 1;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        input[type="datetime-local"] {
+            color-scheme: dark;
         }
 
         /* Botões de atalho */
@@ -392,18 +605,24 @@
             align-items: center;
             justify-content: center;
             user-select: none;
+            min-width: 28px;
         }
-        
+       
         .val-btn:hover {
             background: #3b82f6;
             color: white;
             border-color: #3b82f6;
+            transform: scale(1.05);
         }
-        
+       
+        .val-btn:active {
+            transform: scale(0.95);
+        }
+       
         .result-btn {
-            width: 28px;
-            height: 28px;
-            border-radius: 6px;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
             border: 1px solid rgba(148, 163, 184, 0.1);
             background: #0f1520;
             color: #64748b;
@@ -412,31 +631,43 @@
             cursor: pointer;
             margin-right: 4px;
             transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+       
+        .result-btn:hover {
+            transform: scale(1.1);
+        }
+       
+        .result-btn:active {
+            transform: scale(0.95);
+        }
+       
         .result-btn.win.active {
             background: #10b981;
             color: white;
             border-color: #10b981;
-            box-shadow: 0 0 8px rgba(16, 185, 129, 0.4);
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
         }
-        
+       
         .result-btn.loss.active {
             background: #ef4444;
             color: white;
             border-color: #ef4444;
-            box-shadow: 0 0 8px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
         }
-        
+       
         .result-btn.draw.active {
             background: #64748b;
             color: white;
             border-color: #64748b;
+            box-shadow: 0 0 12px rgba(100, 116, 139, 0.5);
         }
-        
+       
         .profit-positive { color: #10b981; font-weight: 700; }
         .profit-negative { color: #ef4444; font-weight: 700; }
-        
+       
         .delete-btn {
             background: transparent;
             border: none;
@@ -445,13 +676,18 @@
             font-size: 16px;
             padding: 4px;
             border-radius: 4px;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
-        
+
         .delete-btn:hover {
             color: #ef4444;
-            background: rgba(239, 68, 68, 0.1);
+            background: rgba(239, 68, 68, 0.12);
+            transform: scale(1.1);
         }
-        
+       
         .currency-toggle {
             display: flex;
             gap: 4px;
@@ -459,7 +695,7 @@
             padding: 4px;
             border-radius: 6px;
         }
-        
+       
         .currency-btn {
             padding: 6px 12px;
             border: none;
@@ -471,32 +707,40 @@
             color: #64748b;
             transition: all 0.2s;
         }
-        
+       
         .currency-btn.active {
             background: #3b82f6;
             color: white;
         }
-        
+       
         .chart-wrapper {
             background: #0f1520;
             border-radius: 10px;
             padding: 16px;
             height: 240px;
             position: relative;
+            min-height: 200px;
         }
-        
+       
+        @media (max-width: 640px) {
+            .chart-wrapper {
+                height: 200px;
+                padding: 12px;
+            }
+        }
+       
         .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: #64748b;
         }
-        
+       
         .empty-state .icon {
             font-size: 48px;
             margin-bottom: 16px;
             opacity: 0.4;
         }
-        
+       
         /* Modal */
         .modal {
             display: none;
@@ -510,42 +754,71 @@
             justify-content: center;
             align-items: center;
             backdrop-filter: blur(4px);
+            padding: 16px;
         }
-        
+       
         .modal.show {
             display: flex;
+            animation: fadeIn 0.2s ease;
         }
-        
+       
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+       
         .modal-content {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.1);
             border-radius: 14px;
             padding: 28px;
             max-width: 450px;
-            width: 90%;
+            width: 100%;
             text-align: center;
             box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+            max-height: 90vh;
+            overflow-y: auto;
         }
-        
+       
+        @keyframes slideUp {
+            from { transform: translateY(20px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+       
+        @media (max-width: 480px) {
+            .modal-content {
+                padding: 20px;
+                border-radius: 12px;
+            }
+            .modal-btns {
+                flex-direction: column;
+            }
+            .modal-btns .btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+       
         .modal-content h3 {
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 12px;
         }
-        
+       
         .modal-content p {
             color: #94a3b8;
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+       
         .modal-btns {
             display: flex;
             gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+       
         .form-input {
             width: 100%;
             padding: 12px 16px;
@@ -558,11 +831,11 @@
             outline: none;
             text-align: center;
         }
-        
+       
         .form-input:focus {
             border-color: #3b82f6;
         }
-        
+       
         input[type="file"] {
             display: none;
         }
@@ -587,6 +860,17 @@
             animation: pulse-red 2s infinite ease-in-out !important;
         }
 
+        /* Highlight temporário para KPIs */
+        @keyframes kpiFlash {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+       
+        .kpi-flash {
+            animation: kpiFlash 0.3s ease;
+        }
+       
         /* Toasts feedback */
         .toast-container {
             position: fixed;
@@ -596,6 +880,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
+            pointer-events: none;
         }
 
         .toast-box {
@@ -612,6 +897,8 @@
             display: flex;
             align-items: center;
             gap: 8px;
+            pointer-events: auto;
+            max-width: 90vw;
         }
 
         .toast-box.success {
@@ -629,29 +916,52 @@
         @keyframes slideIn {
             to { transform: translateX(0); }
         }
+       
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(120%); opacity: 0; }
+        }
+       
+        .toast-box.removing {
+            animation: slideOut 0.3s forwards;
+        }
+
+        /* Responsividade do Toasts em mobile */
+        @media (max-width: 640px) {
+            .toast-container {
+                bottom: 12px;
+                right: 12px;
+                left: 12px;
+                align-items: stretch;
+            }
+            .toast-box {
+                font-size: 12px;
+                padding: 10px 14px;
+            }
+        }
 
         /* Barras de Rolagem Estilizadas Premium */
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
             height: 6px;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #0f1520;
             border-radius: 10px;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #1e293b;
             border-radius: 10px;
             border: 1px solid rgba(148, 163, 184, 0.08);
             transition: background 0.2s;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #3b82f6;
         }
-        
+       
         .custom-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #1e293b #0f1520;
@@ -662,16 +972,16 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <div class="brand" onclick="showBancaModal()">
+            <div class="brand" onclick="showConfigModal()" title="Configurar valores padrão">
                 <div class="logo">📈</div>
                 <div>
                     <h1>GB <span class="pro-badge">Pro</span></h1>
                     <p>Gerenciamento de Banca</p>
                 </div>
             </div>
-            
+           
             <div class="header-stats">
-                <div class="stat-box">
+                <div class="stat-box" style="display: none;">
                     <div class="stat-label">BANCA INICIAL</div>
                     <div class="rate-row">
                         <span>$</span>
@@ -679,24 +989,25 @@
                     </div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">META DIA (0.75%)</div>
+                    <div class="stat-label" id="labelMeta">META DIA (0,75%)</div>
                     <div class="stat-value positive" id="displayMeta">+ $ 75,00</div>
                 </div>
                 <div class="stat-box">
-                    <div class="stat-label">STOP DIA (1.00%)</div>
+                    <div class="stat-label" id="labelStop">STOP DIA (1,00%)</div>
                     <div class="stat-value negative" id="displayStop">- $ 100,00</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">USD / BRL</div>
                     <div class="rate-row">
                         <span>R$</span>
-                        <input type="number" id="taxaCambio" value="5.09" step="0.01" onchange="calcularTudo()">
+                        <input type="text" id="taxaCambio" value="5,09" step="0.01" onchange="cotacaoManual = false; salvarDados(); calcularTudo()">
                     </div>
                 </div>
             </div>
-            
-            <div class="flex gap-2">
+           
+            <div class="header-buttons flex gap-2">
                 <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Google Drive Auto</button>
+                <button class="btn btn-outline" onclick="showConfigModal()">⚙️ Padrões</button>
                 <button class="btn btn-outline" onclick="exportarDados()">⬇️ Backup</button>
                 <label class="btn btn-outline cursor-pointer m-0">
                     ⬆️ Importar
@@ -745,13 +1056,17 @@
             <div class="panel">
                 <div class="panel-header">
                     <div class="panel-title">📋 LOG DE OPERAÇÕES</div>
-                    <button class="btn btn-primary" onclick="adicionarTrade()">➕ NOVO TRADE</button>
+                    <div class="flex flex-wrap gap-2">
+                        <button class="btn btn-emerald text-xs" onclick="adicionarMovimentacao('DEPOSITO')">💰 Depósito</button>
+                        <button class="btn btn-rose text-xs" onclick="adicionarMovimentacao('SAQUE')">🏧 Saque</button>
+                        <button class="btn btn-primary" onclick="adicionarTrade()">➕ NOVO TRADE</button>
+                    </div>
                 </div>
                 <div class="table-container custom-scrollbar" id="tabelaContainer">
                     <!-- Gerado dinamicamente via JS -->
                 </div>
             </div>
-            
+           
             <div class="panel flex flex-col gap-4">
                 <div>
                     <div class="panel-header">
@@ -809,36 +1124,84 @@
         </div>
     </div>
 
+    <!-- Modal de Configurações Padrão -->
+    <div class="modal" id="modalConfig">
+        <div class="modal-content text-left" style="max-width: 520px; max-height: none; overflow-y: visible;">
+            <h3 class="text-center text-lg font-bold mb-1">⚙️ Valores Padrão</h3>
+            <p class="text-center text-[12px] text-slate-400 mb-4">Defina os parâmetros usados nos cálculos e na entrada sugerida</p>
+
+            <div class="grid grid-cols-2 gap-x-4 gap-y-3">
+                <div>
+                    <label class="block text-[11px] font-bold text-slate-300 mb-1">BANCA INICIAL (USD)</label>
+                    <input type="number" class="form-input text-left !py-2" id="cfgBanca" placeholder="10000" step="0.01">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-amber-400 mb-1">PAYOUT PADRÃO (%)</label>
+                    <input type="number" class="form-input text-left !py-2" id="cfgPayout" placeholder="89" step="0.01" min="0">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-emerald-400 mb-1">META DIÁRIA (% ontem)</label>
+                    <input type="number" class="form-input text-left !py-2" id="cfgMeta" placeholder="0.75" step="0.01" min="0">
+                </div>
+                <div>
+                    <label class="block text-[11px] font-bold text-red-400 mb-1">STOP DIÁRIO (% ontem)</label>
+                    <input type="number" class="form-input text-left !py-2" id="cfgStop" placeholder="1.00" step="0.01" min="0">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-[11px] font-bold text-blue-400 mb-1">VALOR DE ENTRADA (% do capital atual)</label>
+                    <input type="number" class="form-input text-left !py-2" id="cfgEntrada" placeholder="0.25" step="0.01" min="0">
+                </div>
+            </div>
+
+            <div class="modal-btns mt-5">
+                <button class="btn btn-outline" onclick="fecharModal('modalConfig')">Cancelar</button>
+                <button class="btn btn-primary" onclick="salvarConfig()">Salvar Padrões</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Modal Google Drive Auto-Sincronismo -->
     <div class="modal" id="modalNuvem">
-        <div class="modal-content text-left max-w-[550px] w-[95%]">
-            <h3 class="text-center text-xl font-bold mb-2">☁️ Sincronismo Físico Google Drive</h3>
-            
-            <div class="bg-slate-950/60 p-4 rounded-xl border border-blue-500/20 mb-4 space-y-4">
-                <div class="font-bold flex items-center justify-between text-xs text-blue-400">
-                    <span>⚡ CONEXÃO DIRETA DO COMPUTADOR</span>
-                    <span class="text-[10px] bg-blue-500/20 text-blue-300 px-2 py-0.5 rounded" id="modalStatusLabel">Desconectado</span>
-                </div>
-                
-                <p class="text-[12px] text-slate-300 leading-relaxed">
-                    Para contornar o bloqueio de segurança do navegador (especialmente hospedado no **GitHub Pages**), nós usamos uma ponte pessoal em sua conta Google. Ela cria e atualiza o arquivo físico **`GB_Pro_Backup.json`** diretamente na raiz do seu Drive!
-                </p>
+        <div class="modal-content text-left max-w-[560px] w-[95%]">
+            <h3 class="text-center text-xl font-bold mb-1">☁️ Sincronismo Google Drive</h3>
+            <p class="text-center text-[12px] text-slate-400 mb-4">Backup físico automático em <b>GB_Pro_Backup.json</b> na raiz do seu Drive</p>
 
-                <!-- Passo a passo simples -->
-                <div class="space-y-2 text-[11px] text-slate-400 border-t border-slate-800 pt-3">
-                    <span class="font-bold text-slate-200 text-xs">COMO ATIVAR EM 1 MINUTO (RÁPIDO E GRÁTIS):</span>
-                    <ol class="list-decimal pl-4 space-y-1">
-                        <li>Acesse o <a href="https://script.google.com" target="_blank" class="text-blue-400 hover:underline">Google Apps Script (clique aqui)</a> e crie um <b>Novo Projeto</b>.</li>
-                        <li>Apague todo o código original e cole o código da caixa abaixo.</li>
-                        <li>Clique em <b>Implantar > Nova implantação</b>. No ícone de engrenagem, escolha <b>App da Web</b>. Em 'Quem pode acessar', altere para <b>Qualquer pessoa</b> e clique em Implantar.</li>
-                        <li>Copie a URL gerada e cole no campo azul abaixo!</li>
-                    </ol>
+            <!-- Card de status -->
+            <div id="cardStatusNuvem" class="rounded-xl border p-4 mb-4 flex items-center gap-3 transition-colors"
+                 style="background: rgba(100,116,139,0.08); border-color: rgba(100,116,139,0.25);">
+                <div id="statusDotNuvem" style="width:12px;height:12px;border-radius:50%;background:#64748b;flex-shrink:0;"></div>
+                <div class="flex-1">
+                    <div id="modalStatusLabel" class="font-bold text-sm" style="color:#94a3b8;">Desconectado</div>
+                    <div id="modalStatusSub" class="text-[11px] text-slate-500">Cole sua URL do Google Apps Script para ativar</div>
                 </div>
+            </div>
 
-                <!-- Caixa de Código do Apps Script -->
-                <div class="space-y-1">
-                    <label class="block text-[10px] font-semibold text-slate-400">CÓDIGO PARA COPIAR E COLAR NO GOOGLE APP SCRIPT:</label>
-                    <textarea readonly id="codigoAppsScript" class="w-full h-16 bg-slate-900 border border-slate-800 text-[10px] font-mono p-2 rounded text-slate-300 select-all" onclick="this.select()">function doPost(e) {
+            <!-- Configurar URL da ponte pessoal -->
+            <div class="space-y-2">
+                <label class="block text-[11px] font-bold text-blue-400">URL DA IMPLANTAÇÃO DO GOOGLE APPS SCRIPT:</label>
+                <div class="flex gap-2">
+                    <input type="text" class="form-input m-0 text-left text-xs py-2 px-3 bg-slate-950 border-blue-500/30" id="inputScriptUrl" placeholder="https://script.google.com/macros/s/...">
+                    <button class="btn btn-primary py-2 px-4 bg-blue-600 hover:bg-blue-500 border-0 whitespace-nowrap" onclick="conectarScriptUrl()">Conectar</button>
+                </div>
+            </div>
+
+            <!-- Ações -->
+            <div class="flex flex-wrap gap-2 mt-3">
+                <button class="btn btn-outline text-xs" onclick="testarConexao()">🔍 Testar</button>
+                <button class="btn btn-outline text-xs" onclick="forcarSincronizacao()">💾 Salvar agora</button>
+                <button class="btn btn-danger text-xs" onclick="desconectarNuvem()">⏏ Desconectar</button>
+            </div>
+
+            <!-- Passo a passo -->
+            <details class="mt-4 text-[11px] text-slate-400 border-t border-slate-800 pt-3">
+                <summary class="cursor-pointer font-bold text-slate-200 text-xs select-none">📋 Como ativar em 1 minuto</summary>
+                <ol class="list-decimal pl-4 space-y-1 mt-2">
+                    <li>Acesse o <a href="https://script.google.com" target="_blank" class="text-blue-400 hover:underline">Google Apps Script</a> e crie um <b>Novo Projeto</b>.</li>
+                    <li>Apague o código e cole o conteúdo abaixo.</li>
+                    <li><b>Implantar > Nova implantação</b> → engrenagem → <b>App da Web</b> → "Qualquer pessoa" → Implantar.</li>
+                    <li>Copie a URL e cole no campo acima, depois clique em <b>Conectar</b>.</li>
+                </ol>
+                <textarea readonly id="codigoAppsScript" class="w-full h-20 mt-2 bg-slate-900 border border-slate-800 text-[10px] font-mono p-2 rounded text-slate-300 select-all" onclick="this.select()">function doPost(e) {
   var data = JSON.parse(e.postData.contents);
   var folder = DriveApp.getRootFolder();
   var files = folder.getFilesByName("GB_Pro_Backup.json");
@@ -853,19 +1216,9 @@ function doGet() {
   }
   return ContentService.createTextOutput("{}").setMimeType(ContentService.MimeType.JSON);
 }</textarea>
-                </div>
+            </details>
 
-                <!-- Configurar URL da ponte pessoal -->
-                <div class="space-y-1 pt-2 border-t border-slate-800">
-                    <label class="block text-[11px] font-bold text-blue-400">COLE AQUI A SUA URL DA DEPLOY DO GOOGLE:</label>
-                    <div class="flex gap-2">
-                        <input type="text" class="form-input m-0 text-left text-xs py-2 px-3 bg-slate-950 border-blue-500/30" id="inputScriptUrl" placeholder="https://script.google.com/macros/s/.../exec">
-                        <button class="btn btn-primary py-2 px-4 bg-blue-600 hover:bg-blue-500 border-0" onclick="conectarScriptUrl()">Conectar</button>
-                    </div>
-                </div>
-            </div>
-
-            <div class="modal-btns">
+            <div class="modal-btns mt-4">
                 <button class="btn btn-outline" onclick="fecharModal('modalNuvem')">Fechar</button>
             </div>
         </div>
@@ -873,46 +1226,82 @@ function doGet() {
 
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
-
+   
+    <!-- Scroll to Top Button -->
+    <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="display: none; position: fixed; bottom: 24px; left: 24px; z-index: 9998; width: 44px; height: 44px; border-radius: 50%; background: #1e293b; border: 1px solid rgba(148,163,184,0.1); color: #94a3b8; cursor: pointer; font-size: 18px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">↑</button>
+   
     <script>
+        // Scroll to top button visibility
+        window.addEventListener('scroll', () => {
+            const btn = document.getElementById('scrollTopBtn');
+            if (window.scrollY > 300) {
+                btn.style.display = 'flex';
+                btn.style.alignItems = 'center';
+                btn.style.justifyContent = 'center';
+            } else {
+                btn.style.display = 'none';
+            }
+        });
         let trades = [];
         let bancaInicial = 10000;
         let moedaGrafico = 'USD';
         let dadosAlteradosSemSalvar = false;
-        
-        // URL da Ponte do Google Drive
+       
+        // Configurações padrão do usuário
+        let cfgMetaDiaria = 0.75;   // % de meta diária sobre o capital de ontem
+        let cfgStopDiario = 1.00;   // % de stop diário sobre o capital de ontem
+        let cfgPctEntrada = 0.25;   // % do capital usado como valor de entrada sugerido
+        let cfgPayout = 89;         // % de payout padrão ao criar trade
+       
+        // URL da Ponte do Google Drive (Apps Script)
         let googleScriptUrl = "";
         let syncTimer = null;
-        
+        let debounceTimer = null;
+        let cotacaoManual = false;   // true se o usuário editou a cotação manualmente
+       
         // Referência global aos gráficos do Chart.js
         let chartEvolucao = null;
         let chartDiario = null;
-        
+       
         window.onload = function() {
             carregarDadosLocal();
             inicializarGraficos();
-            buscarCotacao();
             configurarControleSair();
-            
+
             // Carrega automaticamente do Google Drive se o Script estiver ativo
             carregarDadosGoogleDrive();
+
+            // Busca a cotação após o carregamento (para prevalecer sobre a salva)
+            buscarCotacao(true);
+            // Atualização automática da cotação a cada 10 minutos (forçada)
+            setInterval(() => buscarCotacao(true), 10 * 60 * 1000);
         };
 
         function configurarControleSair() {
             window.addEventListener('beforeunload', function(e) {
-                if (dadosAlteradosSemSalvar) {
+                if (dadosAlteradosSemSalvar && googleScriptUrl) {
+                    const dados = {
+                        trades: trades,
+                        bancaInicial: bancaInicial,
+                        taxaCambio: lerTaxa()
+                    };
+                    try {
+                        navigator.sendBeacon(googleScriptUrl, new Blob([JSON.stringify(dados)], { type: 'text/plain' }));
+                    } catch (err) {
+                        console.error("Falha ao enviar pendências via Beacon:", err);
+                    }
                     const msg = "Gravando modificações pendentes no seu Google Drive...";
                     e.returnValue = msg;
                     return msg;
                 }
             });
         }
-        
+       
         function showToast(mensagem, tipo = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast-box ${tipo}`;
-            
+           
             let icone = '🔔';
             if (tipo === 'success') icone = '✅';
             if (tipo === 'error') icone = '❌';
@@ -920,41 +1309,68 @@ function doGet() {
 
             toast.innerHTML = `<span>${icone}</span><span>${mensagem}</span>`;
             container.appendChild(toast);
-            
+           
             setTimeout(() => {
-                toast.style.animation = 'slideIn 0.3s reverse';
+                toast.classList.add('removing');
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
+       
+        function flashKPI(elementId) {
+            const el = document.getElementById(elementId);
+            if (el) {
+                el.classList.remove('kpi-flash');
+                void el.offsetWidth;
+                el.classList.add('kpi-flash');
+            }
+        }
 
         function carregarDadosLocal() {
-            // Primeiro recupera a chave de sincronismo do Google se houver
             googleScriptUrl = localStorage.getItem('GB_GOOGLE_SCRIPT_URL') || "";
-            document.getElementById('inputScriptUrl').value = googleScriptUrl;
+            const inputUrl = document.getElementById('inputScriptUrl');
+            if (inputUrl) inputUrl.value = googleScriptUrl;
+
+            const cfg = JSON.parse(localStorage.getItem('GB_PRO_CONFIG') || '{}');
+            if (typeof cfg.meta === 'number') cfgMetaDiaria = cfg.meta;
+            if (typeof cfg.stop === 'number') cfgStopDiario = cfg.stop;
+            if (typeof cfg.entrada === 'number') cfgPctEntrada = cfg.entrada;
+            if (typeof cfg.payout === 'number') cfgPayout = cfg.payout;
 
             const salvos = localStorage.getItem('GB_PRO_DADOS');
             if (salvos) {
                 try {
                     const dados = JSON.parse(salvos);
                     trades = dados.trades || [];
-                    bancaInicial = dados.bancaInicial || 10000;
-                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
+                    bancaInicial = dados.bancaInicial || 0;
+                    const taxaSalva = parseFloat(dados.taxaCambio);
+                    const ultimaCotacao = parseFloat(localStorage.getItem('GB_COTACAO'));
+                    const taxaInicial = (!isNaN(taxaSalva) && taxaSalva > 0) ? taxaSalva
+                                    : (!isNaN(ultimaCotacao) && ultimaCotacao > 0) ? ultimaCotacao
+                                    : 5.09;
+                    document.getElementById('taxaCambio').value = formatarTaxa(taxaInicial);
                     document.getElementById('inputBancaHeader').value = bancaInicial;
                 } catch(e) {
                     console.error('Erro ao carregar dados locais:', e);
                 }
+            } else {
+                const ultimaCotacao = parseFloat(localStorage.getItem('GB_COTACAO'));
+                if (!isNaN(ultimaCotacao) && ultimaCotacao > 0) {
+                    document.getElementById('taxaCambio').value = formatarTaxa(ultimaCotacao);
+                }
             }
+            const horaEl = document.getElementById('horaCotacao');
+            const horaSalva = localStorage.getItem('GB_COTACAO_HORA');
+            if (horaEl) horaEl.textContent = horaSalva ? 'Última: ' + horaSalva : '-';
         }
-        
+       
         function salvarDados() {
             const dados = {
                 trades: trades,
                 bancaInicial: bancaInicial,
-                taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.09
+                taxaCambio: lerTaxa()
             };
             localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
-            
-            // Se a ponte com o Google Drive estiver ativa, sincroniza automaticamente
+
             if (googleScriptUrl) {
                 agendarSincronismoGoogleDrive(dados);
             } else {
@@ -968,18 +1384,17 @@ function doGet() {
             dadosAlteradosSemSalvar = true;
             clearTimeout(syncTimer);
             syncTimer = setTimeout(() => {
-                // CORREÇÃO CRÍTICA DE CORS: Usando Content-Type: text/plain para evitar preflight (OPTIONS)
-                // Isso resolve 100% dos travamentos ao executar no GitHub Pages!
                 fetch(googleScriptUrl, {
                     method: 'POST',
-                    mode: 'no-cors', 
+                    mode: 'cors',
+                    redirect: 'follow',
                     headers: { 'Content-Type': 'text/plain' },
                     body: JSON.stringify(dados)
                 })
                 .then(() => {
                     dadosAlteradosSemSalvar = false;
+                    localStorage.setItem('GB_ULTIMA_SYNC', Date.now());
                     atualizarBotaoNuvem('conectado');
-                    console.log("Google Drive: Arquivo físico GB_Pro_Backup.json atualizado!");
                 })
                 .catch((err) => {
                     console.error("Falha ao salvar no Drive:", err);
@@ -993,33 +1408,33 @@ function doGet() {
                 atualizarBotaoNuvem('offline');
                 return;
             }
-            
+           
             atualizarBotaoNuvem('sincronizando');
-            
-            fetch(googleScriptUrl)
+
+            fetch(googleScriptUrl, { mode: 'cors', redirect: 'follow' })
             .then(res => res.json())
             .then(dados => {
                 if (dados && (dados.trades || dados.bancaInicial)) {
                     trades = dados.trades || [];
                     bancaInicial = dados.bancaInicial || 10000;
-                    document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
+                    document.getElementById('taxaCambio').value = formatarTaxa(dados.taxaCambio || 5.09);
                     document.getElementById('inputBancaHeader').value = bancaInicial;
-                    
+                   
                     localStorage.setItem('GB_PRO_DADOS', JSON.stringify(dados));
-                    
+                   
                     dadosAlteradosSemSalvar = false;
-                    calcularTudoSemLoop();
+                    calcularTudo(false);
                     atualizarBotaoNuvem('conectado');
                     showToast("Sincronizado: GB_Pro_Backup.json importado com sucesso!", "success");
                 } else {
                     atualizarBotaoNuvem('conectado');
-                    calcularTudoSemLoop();
+                    calcularTudo(false);
                 }
             })
             .catch((err) => {
                 console.error("Erro ao carregar do Drive:", err);
                 atualizarBotaoNuvem('desconectado');
-                calcularTudoSemLoop();
+                calcularTudo(false);
             });
         }
 
@@ -1040,60 +1455,144 @@ function doGet() {
         function atualizarBotaoNuvem(status) {
             const btn = document.getElementById('btnNuvemAtiva');
             const modalLabel = document.getElementById('modalStatusLabel');
-            
+            const modalSub = document.getElementById('modalStatusSub');
+            const card = document.getElementById('cardStatusNuvem');
+            const dot = document.getElementById('statusDotNuvem');
+
+            const setCard = (corFundo, corBorda, corDot, corTexto) => {
+                if (card) { card.style.background = corFundo; card.style.borderColor = corBorda; }
+                if (dot) { dot.style.background = corDot; }
+                if (modalLabel) { modalLabel.style.color = corTexto; }
+            };
+
             if (status === 'conectado') {
                 btn.className = "btn btn-cloud";
                 btn.innerHTML = `🟢 Drive Sincronizado`;
-                if(modalLabel) {
-                    modalLabel.textContent = "Conectado ao Drive";
-                    modalLabel.className = "text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded";
-                }
+                if (modalLabel) modalLabel.textContent = "Conectado ao Drive";
+                if (modalSub) modalSub.textContent = ultimaSyncTexto();
+                setCard("rgba(16,185,129,0.10)", "rgba(16,185,129,0.35)", "#10b981", "#34d399");
             } else if (status === 'sincronizando') {
                 btn.className = "btn btn-cloud syncing";
                 btn.innerHTML = `🟡 Gravando Drive...`;
-                if(modalLabel) {
-                    modalLabel.textContent = "Sincronizando dados...";
-                    modalLabel.className = "text-[10px] bg-amber-500/20 text-amber-300 px-2 py-0.5 rounded";
-                }
+                if (modalLabel) modalLabel.textContent = "Sincronizando dados...";
+                if (modalSub) modalSub.textContent = "Enviando para o Google Drive...";
+                setCard("rgba(245,158,11,0.10)", "rgba(245,158,11,0.35)", "#fbbf24", "#fbbf24");
             } else if (status === 'desconectado') {
                 btn.className = "btn btn-cloud disconnected";
                 btn.innerHTML = `🔴 Falha na Rede`;
-                if(modalLabel) {
-                    modalLabel.textContent = "Sem conexão de rede";
-                    modalLabel.className = "text-[10px] bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded";
-                }
+                if (modalLabel) modalLabel.textContent = "Falha na conexão";
+                if (modalSub) modalSub.textContent = "Não foi possível salvar no Drive";
+                setCard("rgba(239,68,68,0.10)", "rgba(239,68,68,0.35)", "#ef4444", "#f87171");
             } else {
                 btn.className = "btn btn-outline text-slate-400";
                 btn.innerHTML = `🔴 Offline`;
-                if(modalLabel) {
-                    modalLabel.textContent = "Desconectado";
-                    modalLabel.className = "text-[10px] bg-slate-500/20 text-slate-300 px-2 py-0.5 rounded";
-                }
+                if (modalLabel) modalLabel.textContent = "Desconectado";
+                if (modalSub) modalSub.textContent = "Cole sua URL do Google Apps Script para ativar";
+                setCard("rgba(100,116,139,0.08)", "rgba(100,116,139,0.25)", "#64748b", "#94a3b8");
             }
         }
-        
-        function buscarCotacao() {
-            fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
+
+        function ultimaSyncTexto() {
+            const t = localStorage.getItem('GB_ULTIMA_SYNC');
+            if (!t) return "Pronto para sincronizar";
+            try {
+                const d = new Date(parseInt(t));
+                return "Última sincronização: " + d.toLocaleString('pt-BR');
+            } catch (e) {
+                return "Pronto para sincronizar";
+            }
+        }
+
+        function testarConexao() {
+            const url = document.getElementById('inputScriptUrl').value.trim();
+            if (!url.startsWith("https://script.google.com/")) {
+                showToast("Cole uma URL válida do Google Apps Script antes de testar.", "error");
+                return;
+            }
+            atualizarBotaoNuvem('sincronizando');
+            fetch(url, { mode: 'cors', redirect: 'follow' })
                 .then(r => r.json())
-                .then(d => {
-                    if (d && d.USDBRL) {
-                        const valorCotado = parseFloat(d.USDBRL.bid);
-                        document.getElementById('taxaCambio').value = valorCotado.toFixed(2);
-                        showToast(`Cotação do Dólar atualizada: R$ ${valorCotado.toFixed(2)}`, 'success');
+                .then(() => {
+                    showToast("Conexão OK! Ponte do Drive acessível.", "success");
+                    atualizarBotaoNuvem('conectado');
+                })
+                .catch(() => {
+                    showToast("Falha no teste. Verifique a URL e as permissões da implantação.", "error");
+                    atualizarBotaoNuvem('desconectado');
+                });
+        }
+
+        function forcarSincronizacao() {
+            if (!googleScriptUrl) {
+                showToast("Conecte-se ao Google Drive primeiro.", "warning");
+                return;
+            }
+            salvarDados();
+            showToast("Sincronização enviada ao Drive.", "success");
+        }
+
+        function desconectarNuvem() {
+            googleScriptUrl = "";
+            localStorage.removeItem('GB_GOOGLE_SCRIPT_URL');
+            const iu = document.getElementById('inputScriptUrl');
+            if (iu) iu.value = "";
+            atualizarBotaoNuvem('offline');
+            showToast("Desconectado do Google Drive.", "warning");
+        }
+       
+        function buscarCotacao(forcar = false) {
+            const btnCambio = document.getElementById('taxaCambio');
+            const horaEl = document.getElementById('horaCotacao');
+
+            const fontes = [
+                fetch('https://economia.awesomeapi.com.br/json/last/USD-BRL')
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d && d.USDBRL && d.USDBRL.bid) return parseFloat(d.USDBRL.bid);
+                        throw new Error('sem bid');
+                    }),
+                fetch('https://open.er-api.com/v6/latest/USD')
+                    .then(r => r.json())
+                    .then(d => {
+                        if (d && d.rates && d.rates.BRL) return parseFloat(d.rates.BRL);
+                        throw new Error('sem BRL');
+                    })
+            ];
+
+            Promise.any(fontes)
+                .then(valorCotado => {
+                    if (isNaN(valorCotado) || valorCotado <= 0) throw new Error('valor inválido');
+                    // Atualiza sempre (exceto se o usuário editou manualmente nesta sessão)
+                    if (forcar || !cotacaoManual) {
+                        btnCambio.value = formatarTaxa(valorCotado);
+                        localStorage.setItem('GB_COTACAO', valorCotado.toFixed(2));
+                        const horaStr = new Date().toLocaleTimeString('pt-BR');
+                        localStorage.setItem('GB_COTACAO_HORA', horaStr);
+                        if (horaEl) horaEl.textContent = 'Atualizado: ' + horaStr;
+                        showToast('Cotação do Dólar: R$ ' + valorCotado.toFixed(2), 'success');
                     }
                     calcularTudo();
                 })
                 .catch(() => {
-                    showToast('Utilizando cotação padrão de segurança (R$ 5.09).', 'warning');
+                    const ultima = localStorage.getItem('GB_COTACAO');
+                    if (ultima && !cotacaoManual) {
+                        btnCambio.value = ultima;
+                        if (horaEl) horaEl.textContent = 'Última: ' + (localStorage.getItem('GB_COTACAO_HORA') || '');
+                        showToast('Usando última cotação conhecida: R$ ' + ultima, 'warning');
+                    } else {
+                        showToast('Não foi possível obter a cotação. Verifique sua conexão.', 'warning');
+                    }
                     calcularTudo();
                 });
         }
-        
+       
         function calcularLucro(trade) {
+            // Apenas operações (não depósitos/saques) geram lucro/prejuízo
+            if (trade.tipo && trade.tipo !== 'TRADE') return 0;
             if (!trade.resultado) return 0;
             const valor = parseFloat(trade.valor) || 0;
             const payout = parseFloat(trade.payout) || 89;
-            
+
             if (trade.resultado === 'WIN') {
                 return valor * (payout / 100);
             } else if (trade.resultado === 'LOSS') {
@@ -1101,11 +1600,38 @@ function doGet() {
             }
             return 0;
         }
-        
-        function capitalAtual() {
-            return bancaInicial + trades.reduce((soma, t) => soma + calcularLucro(t), 0);
+
+        // Impacto real no saldo do capital (inclui depósitos e saques)
+        function impactoCapital(trade) {
+            if (!trade.resultado) return 0;
+            const valor = parseFloat(trade.valor) || 0;
+            if (trade.tipo === 'DEPOSITO') return valor;
+            if (trade.tipo === 'SAQUE') return -valor;
+            return calcularLucro(trade);
         }
-        
+
+        function capitalAtual() {
+            return bancaInicial + trades.reduce((soma, t) => soma + impactoCapital(t), 0);
+        }
+
+        function lucroOperacoes() {
+            return trades.reduce((soma, t) => soma + calcularLucro(t), 0);
+        }
+
+        function dataHojeStr() {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
+        }
+
+        function capitalAteOntem() {
+            const hoje = dataHojeStr();
+            const ateOntem = trades
+                .filter(t => (t.data || '').slice(0, 10) < hoje)
+                .reduce((soma, t) => soma + impactoCapital(t), 0);
+            return bancaInicial + ateOntem;
+        }
+       
         function formatarMoeda(valor, moeda) {
             const abs = Math.abs(valor);
             const neg = valor < 0 ? '- ' : '';
@@ -1116,64 +1642,100 @@ function doGet() {
             return moeda === 'USD' ? neg + '$ ' + formatado : neg + 'R$ ' + formatado;
         }
 
+        function lerTaxa() {
+            const el = document.getElementById('taxaCambio');
+            const v = parseFloat((el && el.value ? el.value : '').replace(',', '.'));
+            return isNaN(v) ? 5.09 : v;
+        }
+
+        function formatarTaxa(valor) {
+            return (parseFloat(valor) || 0).toFixed(2).replace('.', ',');
+        }
+
+        function agoraLocalStr() {
+            const d = new Date();
+            const pad = n => String(n).padStart(2, '0');
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) +
+                   'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
+        }
+
+        function formatarDataHora(str) {
+            if (!str) return '';
+            const dataHora = str.replace('T', ' ');
+            return dataHora.slice(0, 16);
+        }
+
         function atualizarBancaHeader(valor) {
             const parsed = parseFloat(valor);
             if (!isNaN(parsed) && parsed > 0) {
                 bancaInicial = parsed;
                 dadosAlteradosSemSalvar = true;
-                calcularTudo();
+                calcularTudoDebounced();
                 showToast('Banca inicial atualizada!', 'success');
             } else {
                 showToast('Valor de banca inválido.', 'error');
                 document.getElementById('inputBancaHeader').value = bancaInicial;
             }
         }
-        
-        function calcularTudo() {
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
+       
+        function calcularTudoDebounced() {
+            clearTimeout(debounceTimer);
+            debounceTimer = setTimeout(() => calcularTudo(true), 150);
+        }
+       
+        function calcularTudo(salvar = true) {
+            const taxa = lerTaxa();
             const capital = capitalAtual();
-            const lucroTotal = capital - bancaInicial;
-            
-            const meta = capital * 0.0075;
-            const stop = capital * 0.01;
-            
+            const lucroTotal = lucroOperacoes();
+           
+            const baseMetaStop = capitalAteOntem();
+            const meta = baseMetaStop * (cfgMetaDiaria / 100);
+            const stop = baseMetaStop * (cfgStopDiario / 100);
+
             document.getElementById('displayMeta').textContent = '+ ' + formatarMoeda(meta, 'USD');
             document.getElementById('displayStop').textContent = '- ' + formatarMoeda(stop, 'USD');
-            
+            const labelMeta = document.getElementById('labelMeta');
+            const labelStop = document.getElementById('labelStop');
+            if (labelMeta) labelMeta.textContent = 'META DIA (' + cfgMetaDiaria.toFixed(2).replace('.', ',') + '%)';
+            if (labelStop) labelStop.textContent = 'STOP DIA (' + cfgStopDiario.toFixed(2).replace('.', ',') + '%)';
+
             if (document.activeElement !== document.getElementById('inputBancaHeader')) {
                 document.getElementById('inputBancaHeader').value = bancaInicial;
             }
-            
+           
             const elLucro = document.getElementById('kpiLucro');
             elLucro.textContent = (lucroTotal >= 0 ? '+ ' : '') + formatarMoeda(lucroTotal, 'USD');
             elLucro.className = 'kpi-value ' + (lucroTotal >= 0 ? 'positive' : 'negative');
+            flashKPI('kpiLucro');
             document.getElementById('kpiLucroBRL').textContent = formatarMoeda(lucroTotal * taxa, 'BRL');
-            
-            const finalizadas = trades.filter(t => t.resultado && t.resultado !== 'EMPATE');
+           
+            const finalizadas = trades.filter(t => t.resultado && t.resultado !== 'EMPATE' && (!t.tipo || t.tipo === 'TRADE'));
             const vitorias = trades.filter(t => t.resultado === 'WIN').length;
             const winrate = finalizadas.length > 0 ? (vitorias / finalizadas.length * 100) : 0;
             document.getElementById('kpiWinrate').textContent = winrate.toFixed(1).replace('.', ',') + '%';
             document.getElementById('barraWinrate').style.width = Math.min(winrate, 100) + '%';
-            
+            flashKPI('kpiWinrate');
+           
             const dLocal = new Date();
-            const hojeLocalStr = dLocal.getFullYear() + '-' + 
-                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
+            const hojeLocalStr = dLocal.getFullYear() + '-' +
+                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' +
                                 String(dLocal.getDate()).padStart(2, '0');
 
             const lucroHoje = trades
-                .filter(t => t.data === hojeLocalStr && t.resultado)
+                .filter(t => (t.data || '').startsWith(hojeLocalStr) && t.resultado)
                 .reduce((soma, t) => soma + calcularLucro(t), 0);
-            
+           
             const elHoje = document.getElementById('kpiHoje');
             elHoje.textContent = (lucroHoje >= 0 ? '+ ' : '') + formatarMoeda(lucroHoje, 'USD');
             elHoje.className = 'kpi-value';
-            
+            flashKPI('kpiHoje');
+           
             const elHojeStatus = document.getElementById('kpiHojeStatus');
             const cardHoje = document.getElementById('cardHoje');
-            
+           
             cardHoje.classList.remove('glow-green', 'glow-red');
             elHoje.classList.remove('positive', 'negative');
-            
+           
             if (lucroHoje >= meta) {
                 elHojeStatus.textContent = '🚀 Meta batida!';
                 elHojeStatus.style.color = '#10b981';
@@ -1188,10 +1750,11 @@ function doGet() {
                 elHojeStatus.textContent = 'Em progresso...';
                 elHojeStatus.style.color = '#64748b';
             }
-            
+           
             document.getElementById('kpiCapital').textContent = formatarMoeda(capital, 'USD');
             document.getElementById('kpiCapitalBRL').textContent = formatarMoeda(capital * taxa, 'BRL');
-            
+            flashKPI('kpiCapital');
+           
             const lucroBruto = trades.filter(t => t.resultado === 'WIN').reduce((s, t) => s + calcularLucro(t), 0);
             const perdaBruta = Math.abs(trades.filter(t => t.resultado === 'LOSS').reduce((s, t) => s + calcularLucro(t), 0));
             let pf = '0,00';
@@ -1201,23 +1764,28 @@ function doGet() {
                 pf = 'MAX';
             }
             document.getElementById('kpiPF').textContent = pf;
-            
-            const roi = bancaInicial > 0 ? ((capital - bancaInicial) / bancaInicial * 100) : 0;
+            flashKPI('kpiPF');
+           
+            const roi = bancaInicial > 0 ? (lucroTotal / bancaInicial * 100) : 0;
             const elROI = document.getElementById('kpiROI');
             elROI.textContent = (roi >= 0 ? '+' : '') + roi.toFixed(2).replace('.', ',') + '%';
             elROI.className = 'kpi-value ' + (roi >= 0 ? 'positive' : 'negative');
-            
+            flashKPI('kpiROI');
+           
             document.getElementById('graficoOperacoes').textContent = trades.filter(t => t.resultado).length;
             document.getElementById('graficoMoeda').textContent = moedaGrafico;
-            
+           
             renderizarTabela();
             atualizarGraficos();
-            salvarDados();
+           
+            if (salvar) {
+                salvarDados();
+            }
         }
-        
+       
         function renderizarTabela() {
             const container = document.getElementById('tabelaContainer');
-            
+           
             if (trades.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -1227,7 +1795,22 @@ function doGet() {
                     </div>`;
                 return;
             }
-            
+           
+            if (trades.length > 50) {
+                container.innerHTML = `
+                    <div class="table-loading"></div>
+                    <div class="empty-state" style="padding: 40px 20px;">
+                        <div class="icon">⏳</div>
+                        <div>Carregando ${trades.length} operações...</div>
+                    </div>`;
+                setTimeout(() => renderizarTabelaConteudo(container), 50);
+                return;
+            }
+           
+            renderizarTabelaConteudo(container);
+        }
+       
+        function renderizarTabelaConteudo(container) {
             let html = `
                 <table class="w-full">
                     <thead>
@@ -1243,24 +1826,32 @@ function doGet() {
                     </thead>
                     <tbody>
             `;
-            
+           
             [...trades].reverse().forEach((trade, idx) => {
                 const idxOriginal = trades.length - 1 - idx;
-                const lucro = calcularLucro(trade);
-                
+                const lucro = impactoCapital(trade);
+                const isMov = trade.tipo && trade.tipo !== 'TRADE';
+
                 html += `
-                    <tr class="border-b border-slate-800/40 hover:bg-slate-800/10 transition-colors">
+                    <tr class="border-b border-slate-800/40 hover:bg-slate-800/10 transition-colors ${trade.tipo && trade.tipo !== 'TRADE' ? 'bg-slate-900/30' : ''}">
                         <td class="text-slate-500 font-bold text-center py-3 px-4">${idxOriginal + 1}</td>
                         <td class="py-3 px-4">
-                            <input type="date" class="trade-input w-full max-w-[150px] mx-auto text-center" value="${trade.data}" onchange="atualizarTrade(${trade.id}, 'data', this.value)">
+                            <input type="datetime-local" class="trade-input w-full max-w-[170px] mx-auto text-center" value="${trade.data}" onchange="atualizarTrade(${trade.id}, 'data', this.value)">
                         </td>
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-1.5 w-full max-w-[180px] mx-auto">
-                                <button class="val-btn px-2.5 py-1 text-xs" onclick="desdobrarValor(${trade.id})" title="Desdobrar valor (/2)">-</button>
-                                <input type="number" class="trade-input text-center font-bold text-sm w-[90px]" value="${trade.valor}" step="any" onchange="atualizarTrade(${trade.id}, 'valor', parseFloat(this.value) || 0)">
-                                <button class="val-btn px-2.5 py-1 text-xs" onclick="dobrarValor(${trade.id})" title="Dobrar valor (x2)">+</button>
+                                <button class="val-btn px-2.5 py-1 text-xs" onclick="desdobrarValor(${trade.id})" title="Desdobrar valor (/2)" aria-label="Dividir valor por 2">-</button>
+                                <input type="number" class="trade-input text-center font-bold text-sm w-[90px]" value="${trade.valor}" step="any" onchange="atualizarTrade(${trade.id}, 'valor', parseFloat(this.value) || 0)" aria-label="Valor">
+                                <button class="val-btn px-2.5 py-1 text-xs" onclick="dobrarValor(${trade.id})" title="Dobrar valor (x2)" aria-label="Dobrar valor">+</button>
                             </div>
                         </td>
+                        ${trade.tipo && trade.tipo !== 'TRADE' ? `
+                        <td class="py-3 px-4 text-center" colspan="2">
+                            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-bold ${trade.tipo === 'DEPOSITO' ? 'bg-emerald-500/15 text-emerald-300' : 'bg-rose-500/15 text-rose-300'}">
+                                ${trade.tipo === 'DEPOSITO' ? '💰 Depósito' : '🏧 Saque'}
+                            </span>
+                        </td>
+                        ` : `
                         <td class="py-3 px-4 text-center">
                             <div class="inline-flex items-center justify-center gap-1 bg-slate-950/40 border border-slate-800 rounded-lg px-2 py-1 max-w-[80px]">
                                 <input type="number" class="trade-input bg-transparent border-0 p-0 text-center text-sm font-semibold w-[36px]" value="${trade.payout}" step="any" onchange="atualizarTrade(${trade.id}, 'payout', parseFloat(this.value) || 0)">
@@ -1269,43 +1860,80 @@ function doGet() {
                         </td>
                         <td class="py-3 px-4">
                             <div class="flex gap-1 justify-center">
-                                <button class="result-btn win ${trade.resultado === 'WIN' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'WIN')">W</button>
-                                <button class="result-btn loss ${trade.resultado === 'LOSS' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'LOSS')">L</button>
-                                <button class="result-btn draw ${trade.resultado === 'EMPATE' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'EMPATE')">D</button>
+                                <button class="result-btn win ${trade.resultado === 'WIN' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'WIN')" aria-label="Vitória">W</button>
+                                <button class="result-btn loss ${trade.resultado === 'LOSS' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'LOSS')" aria-label="Derrota">L</button>
+                                <button class="result-btn draw ${trade.resultado === 'EMPATE' ? 'active' : ''}" onclick="definirResultado(${trade.id}, 'EMPATE')" aria-label="Empate">D</button>
                             </div>
                         </td>
-                        <td class="py-3 px-4 text-center font-bold text-sm whitespace-nowrap ${lucro > 0 ? 'profit-positive' : lucro < 0 ? 'profit-negative' : 'text-slate-450'}">
+                        `}
+                        <td class="py-3 px-4 text-center font-bold text-sm whitespace-nowrap ${isMov ? (lucro >= 0 ? 'profit-positive' : 'profit-negative') : (lucro > 0 ? 'profit-positive' : lucro < 0 ? 'profit-negative' : 'text-slate-450')}">
                             ${lucro > 0 ? '+' : ''}${formatarMoeda(lucro, 'USD')}
                         </td>
                         <td class="py-3 px-2 text-center">
-                            <button class="delete-btn hover:bg-red-500/10 rounded-lg p-2" onclick="removerTrade(${trade.id})" title="Remover operação">🗑️</button>
+                            <button class="delete-btn rounded-lg p-2" onclick="removerTrade(${trade.id})" title="Remover operação" aria-label="Remover operação">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <polyline points="3 6 5 6 21 6"></polyline>
+                                    <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path>
+                                    <path d="M10 11v6"></path>
+                                    <path d="M14 11v6"></path>
+                                    <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path>
+                                    <line x1="10" y1="6" x2="14" y2="6"></line>
+                                </svg>
+                            </button>
                         </td>
                     </tr>
                 `;
             });
-            
+           
             html += '</tbody></table>';
             container.innerHTML = html;
         }
-        
+       
         function adicionarTrade() {
             const capital = capitalAtual();
-            const entradaSugerida = Math.floor(capital * 0.0025);
-            
+            const entradaSugerida = Math.max(1, Math.floor(capital * (cfgPctEntrada / 100)));
+
             const novoTrade = {
                 id: Date.now() + Math.floor(Math.random() * 1000),
-                data: new Date().toISOString().split('T')[0],
+                data: agoraLocalStr(),
                 valor: entradaSugerida,
-                payout: 89,
-                resultado: 'EMPATE'
+                payout: cfgPayout,
+                resultado: 'EMPATE',
+                tipo: 'TRADE'
             };
-            
+
             trades.push(novoTrade);
             dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Nova operação inserida no log!', 'success');
+
+            setTimeout(() => {
+                const container = document.getElementById('tabelaContainer');
+                container.scrollTop = 0;
+            }, 100);
         }
-        
+
+        function adicionarMovimentacao(tipo) {
+            const novoTrade = {
+                id: Date.now() + Math.floor(Math.random() * 1000),
+                data: agoraLocalStr(),
+                valor: 100,
+                payout: 0,
+                resultado: tipo === 'DEPOSITO' ? 'DEP' : 'SAQ',
+                tipo: tipo
+            };
+
+            trades.push(novoTrade);
+            dadosAlteradosSemSalvar = true;
+            calcularTudo();
+            showToast(tipo === 'DEPOSITO' ? 'Depósito de banca adicionado!' : 'Saque de banca adicionado!', 'success');
+
+            setTimeout(() => {
+                const container = document.getElementById('tabelaContainer');
+                container.scrollTop = 0;
+            }, 100);
+        }
+       
         function atualizarTrade(id, campo, valor) {
             trades = trades.map(t => t.id === id ? { ...t, [campo]: valor } : t);
             dadosAlteradosSemSalvar = true;
@@ -1337,27 +1965,27 @@ function doGet() {
             calcularTudo();
             showToast('Valor da operação dividido por 2!', 'success');
         }
-        
+       
         function definirResultado(id, resultado) {
             trades = trades.map(t => t.id === id ? { ...t, resultado } : t);
             dadosAlteradosSemSalvar = true;
             calcularTudo();
         }
-        
+       
         function removerTrade(id) {
             trades = trades.filter(t => t.id !== id);
             dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Operação removida.', 'warning');
         }
-        
+       
         function mudarMoeda(moeda) {
             moedaGrafico = moeda;
             document.getElementById('btnUSD').classList.toggle('active', moeda === 'USD');
             document.getElementById('btnBRL').classList.toggle('active', moeda === 'BRL');
             calcularTudo();
         }
-        
+       
         function inicializarGraficos() {
             const ctxEvolucao = document.getElementById('canvasEvolucao').getContext('2d');
             chartEvolucao = new Chart(ctxEvolucao, {
@@ -1371,6 +1999,7 @@ function doGet() {
                         fill: true,
                         tension: 0.3,
                         pointRadius: 5,
+                        pointHoverRadius: 8,
                         borderColor: '#10b981',
                         backgroundColor: 'rgba(16, 185, 129, 0.08)',
                         pointBackgroundColor: '#10b981',
@@ -1380,17 +2009,32 @@ function doGet() {
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(148, 163, 184, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return formatarMoeda(context.parsed.y, moedaGrafico);
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
-                            grid: { color: 'rgba(148, 163, 184, 0.05)' },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                            ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 0 }
                         },
                         y: {
-                            grid: { color: 'rgba(148, 163, 184, 0.05)' },
-                            ticks: { color: '#94a3b8' }
+                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                            ticks: { color: '#94a3b8', callback: function(value) { return formatarMoeda(value, moedaGrafico); } }
                         }
                     }
                 }
@@ -1405,23 +2049,39 @@ function doGet() {
                         label: 'Lucro/Prejuízo',
                         data: [],
                         backgroundColor: [],
-                        borderRadius: 4
+                        borderRadius: 4,
+                        borderSkipped: false
                     }]
                 },
                 options: {
                     responsive: true,
                     maintainAspectRatio: false,
+                    animation: { duration: 600, easing: 'easeInOutQuart' },
                     plugins: {
-                        legend: { display: false }
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: '#1e293b',
+                            titleColor: '#f8fafc',
+                            bodyColor: '#94a3b8',
+                            borderColor: 'rgba(148, 163, 184, 0.1)',
+                            borderWidth: 1,
+                            padding: 10,
+                            displayColors: false,
+                            callbacks: {
+                                label: function(context) {
+                                    return formatarMoeda(context.parsed.y, moedaGrafico);
+                                }
+                            }
+                        }
                     },
                     scales: {
                         x: {
-                            grid: { display: false },
-                            ticks: { color: '#94a3b8', font: { size: 10 } }
+                            grid: { display: false, drawBorder: false },
+                            ticks: { color: '#94a3b8', font: { size: 10 }, maxRotation: 45, minRotation: 0 }
                         },
                         y: {
-                            grid: { color: 'rgba(148, 163, 184, 0.05)' },
-                            ticks: { color: '#94a3b8' }
+                            grid: { color: 'rgba(148, 163, 184, 0.05)', drawBorder: false },
+                            ticks: { color: '#94a3b8', callback: function(value) { return formatarMoeda(value, moedaGrafico); } }
                         }
                     }
                 }
@@ -1431,7 +2091,7 @@ function doGet() {
         function atualizarGraficos() {
             if (!chartEvolucao || !chartDiario) return;
 
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
+            const taxa = lerTaxa();
             const multiplicador = moedaGrafico === 'BRL' ? taxa : 1;
 
             let saldos = [bancaInicial * multiplicador];
@@ -1440,9 +2100,9 @@ function doGet() {
 
             const tradesFinalizados = trades.filter(t => t.resultado);
             tradesFinalizados.forEach((t, i) => {
-                saldoAtual += calcularLucro(t);
+                saldoAtual += impactoCapital(t);
                 saldos.push(saldoAtual * multiplicador);
-                labelsSaldo.push(`${i+1}`);
+                labelsSaldo.push(String(i + 1));
             });
 
             const estaEmLucro = saldoAtual >= bancaInicial;
@@ -1455,25 +2115,25 @@ function doGet() {
             chartEvolucao.data.datasets[0].backgroundColor = corSombra;
             chartEvolucao.data.datasets[0].pointBackgroundColor = corTema;
             chartEvolucao.data.datasets[0].pointBorderColor = corTema;
-            
+           
             const wrapperEvol = document.getElementById('wrapperEvolucao');
             const minWidthEvol = Math.max(100, labelsSaldo.length * 35);
             const targetWidthEvol = labelsSaldo.length > 10 ? `${minWidthEvol}px` : '100%';
             if (wrapperEvol.style.width !== targetWidthEvol) {
                 wrapperEvol.style.width = targetWidthEvol;
             }
-            chartEvolucao.update();
+            chartEvolucao.update('none');
             chartEvolucao.resize();
 
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 const parent = wrapperEvol.parentElement;
-                parent.scrollLeft = parent.scrollWidth;
-            }, 50);
+                if (parent) parent.scrollLeft = parent.scrollWidth;
+            });
 
             const lucroPorDia = {};
             trades.forEach(t => {
                 if (t.resultado) {
-                    const dataFormatada = t.data.split('-').reverse().slice(0,2).join('/');
+                    const dataFormatada = (t.data || '').slice(0, 10).split('-').reverse().join('/');
                     lucroPorDia[dataFormatada] = (lucroPorDia[dataFormatada] || 0) + calcularLucro(t);
                 }
             });
@@ -1485,43 +2145,102 @@ function doGet() {
             chartDiario.data.labels = dias;
             chartDiario.data.datasets[0].data = valoresDias;
             chartDiario.data.datasets[0].backgroundColor = coresDias;
-            
+           
             const wrapperDiario = document.getElementById('wrapperRetornoDiario');
             const minWidthDiario = Math.max(100, dias.length * 60);
             const targetWidthDiario = dias.length > 5 ? `${minWidthDiario}px` : '100%';
             if (wrapperDiario.style.width !== targetWidthDiario) {
                 wrapperDiario.style.width = targetWidthDiario;
             }
-            chartDiario.update();
+            chartDiario.update('none');
             chartDiario.resize();
 
-            setTimeout(() => {
+            requestAnimationFrame(() => {
                 const parent = wrapperDiario.parentElement;
-                parent.scrollLeft = parent.scrollWidth;
-            }, 50);
+                if (parent) parent.scrollLeft = parent.scrollWidth;
+            });
         }
 
         function showBancaModal() {
             document.getElementById('inputBanca').value = bancaInicial;
             mostrarModal('modalBanca');
         }
-        
+
+        function showConfigModal() {
+            document.getElementById('cfgBanca').value = bancaInicial;
+            document.getElementById('cfgMeta').value = cfgMetaDiaria;
+            document.getElementById('cfgStop').value = cfgStopDiario;
+            document.getElementById('cfgEntrada').value = cfgPctEntrada;
+            document.getElementById('cfgPayout').value = cfgPayout;
+            mostrarModal('modalConfig');
+        }
+
+        function salvarConfig() {
+            const banca = parseFloat(document.getElementById('cfgBanca').value);
+            const meta = parseFloat(document.getElementById('cfgMeta').value);
+            const stop = parseFloat(document.getElementById('cfgStop').value);
+            const entrada = parseFloat(document.getElementById('cfgEntrada').value);
+            const payout = parseFloat(document.getElementById('cfgPayout').value);
+
+            if (isNaN(banca) || banca < 0) {
+                showToast('Banca inicial inválida.', 'error');
+                return;
+            }
+            if (isNaN(meta) || meta < 0) {
+                showToast('Meta diária inválida.', 'error');
+                return;
+            }
+            if (isNaN(stop) || stop < 0) {
+                showToast('Stop diário inválido.', 'error');
+                return;
+            }
+            if (isNaN(entrada) || entrada <= 0) {
+                showToast('Valor de entrada inválido.', 'error');
+                return;
+            }
+            if (isNaN(payout) || payout <= 0) {
+                showToast('Payout inválido.', 'error');
+                return;
+            }
+
+            bancaInicial = banca;
+            cfgMetaDiaria = meta;
+            cfgStopDiario = stop;
+            cfgPctEntrada = entrada;
+            cfgPayout = payout;
+
+            localStorage.setItem('GB_PRO_CONFIG', JSON.stringify({ meta: cfgMetaDiaria, stop: cfgStopDiario, entrada: cfgPctEntrada, payout: cfgPayout }));
+            document.getElementById('inputBancaHeader').value = bancaInicial;
+
+            dadosAlteradosSemSalvar = true;
+            fecharModal('modalConfig');
+            calcularTudo(true);
+            showToast('Valores padrão salvos!', 'success');
+        }
+
         function showResetModal() {
             mostrarModal('modalReset');
         }
 
         function showNuvemModal() {
+            const input = document.getElementById('inputScriptUrl');
+            if (input && googleScriptUrl) input.value = googleScriptUrl;
+            if (googleScriptUrl) {
+                atualizarBotaoNuvem('conectado');
+            } else {
+                atualizarBotaoNuvem('offline');
+            }
             mostrarModal('modalNuvem');
         }
-        
+       
         function mostrarModal(id) {
             document.getElementById(id).classList.add('show');
         }
-        
+       
         function fecharModal(id) {
             document.getElementById(id).classList.remove('show');
         }
-        
+       
         function salvarBanca() {
             const valor = parseFloat(document.getElementById('inputBanca').value);
             if (valor && valor > 0) {
@@ -1529,51 +2248,51 @@ function doGet() {
                 dadosAlteradosSemSalvar = true;
                 fecharModal('modalBanca');
                 calcularTudo();
-                showToast('Banca inicial updated!', 'success');
+                showToast('Banca inicial atualizada!', 'success');
             } else {
                 showToast('Valor de banca inválido.', 'error');
             }
         }
-        
+       
         function confirmarReset() {
             trades = [];
-            bancaInicial = 10000;
+            bancaInicial = 0;
             localStorage.removeItem('GB_PRO_DADOS');
             dadosAlteradosSemSalvar = true;
             fecharModal('modalReset');
             calcularTudo();
             showToast('Todos os dados foram resetados com sucesso.', 'warning');
         }
-        
+       
         function exportarDados() {
             try {
                 const dados = {
                     trades: trades,
                     bancaInicial: bancaInicial,
-                    taxaCambio: parseFloat(document.getElementById('taxaCambio').value) || 5.09
+                    taxaCambio: lerTaxa()
                 };
-                
+               
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
                 const downloadAnchor = document.createElement('a');
                 const dataBackup = new Date().toISOString().split('T')[0];
-                
+               
                 downloadAnchor.setAttribute("href", dataStr);
                 downloadAnchor.setAttribute("download", `GB_Pro_Backup_${dataBackup}.json`);
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
-                
+               
                 dadosAlteradosSemSalvar = false;
                 showToast('Backup gerado e baixado com sucesso!', 'success');
             } catch (err) {
                 showToast('Falha ao exportar os dados.', 'error');
             }
         }
-        
+       
         function importarDados(input) {
             const file = input.files[0];
             if (!file) return;
-            
+           
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -1581,8 +2300,8 @@ function doGet() {
                     if (dados && typeof dados === 'object') {
                         trades = dados.trades || [];
                         bancaInicial = dados.bancaInicial || 10000;
-                        document.getElementById('taxaCambio').value = dados.taxaCambio || 5.09;
-                        
+                        document.getElementById('taxaCambio').value = formatarTaxa(dados.taxaCambio || 5.09);
+                       
                         dadosAlteradosSemSalvar = true;
                         calcularTudo();
                         showToast('Backup restaurado com sucesso!', 'success');
@@ -1595,92 +2314,6 @@ function doGet() {
             };
             reader.readAsText(file);
             input.value = '';
-        }
-
-        // Força sincronismo e calcula toda a tela em silêncio
-        function calcularTudoSemLoop() {
-            const taxa = parseFloat(document.getElementById('taxaCambio').value) || 5.09;
-            const capital = capitalAtual();
-            const lucroTotal = capital - bancaInicial;
-            
-            const meta = capital * 0.0075;
-            const stop = capital * 0.01;
-            
-            document.getElementById('displayMeta').textContent = '+ ' + formatarMoeda(meta, 'USD');
-            document.getElementById('displayStop').textContent = '- ' + formatarMoeda(stop, 'USD');
-            
-            if (document.activeElement !== document.getElementById('inputBancaHeader')) {
-                document.getElementById('inputBancaHeader').value = bancaInicial;
-            }
-            
-            const elLucro = document.getElementById('kpiLucro');
-            elLucro.textContent = (lucroTotal >= 0 ? '+ ' : '') + formatarMoeda(lucroTotal, 'USD');
-            elLucro.className = 'kpi-value ' + (lucroTotal >= 0 ? 'positive' : 'negative');
-            document.getElementById('kpiLucroBRL').textContent = formatarMoeda(lucroTotal * taxa, 'BRL');
-            
-            const finalizadas = trades.filter(t => t.resultado && t.resultado !== 'EMPATE');
-            const vitorias = trades.filter(t => t.resultado === 'WIN').length;
-            const winrate = finalizadas.length > 0 ? (vitorias / finalizadas.length * 100) : 0;
-            document.getElementById('kpiWinrate').textContent = winrate.toFixed(1).replace('.', ',') + '%';
-            document.getElementById('barraWinrate').style.width = Math.min(winrate, 100) + '%';
-            
-            const dLocal = new Date();
-            const hojeLocalStr = dLocal.getFullYear() + '-' + 
-                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
-                                String(dLocal.getDate()).padStart(2, '0');
-
-            const lucroHoje = trades
-                .filter(t => t.data === hojeLocalStr && t.resultado)
-                .reduce((soma, t) => soma + calcularLucro(t), 0);
-            
-            const elHoje = document.getElementById('kpiHoje');
-            elHoje.textContent = (lucroHoje >= 0 ? '+ ' : '') + formatarMoeda(lucroHoje, 'USD');
-            elHoje.className = 'kpi-value';
-            
-            const elHojeStatus = document.getElementById('kpiHojeStatus');
-            const cardHoje = document.getElementById('cardHoje');
-            
-            cardHoje.classList.remove('glow-green', 'glow-red');
-            elHoje.classList.remove('positive', 'negative');
-            
-            if (lucroHoje >= meta) {
-                elHojeStatus.textContent = '🚀 Meta batida!';
-                elHojeStatus.style.color = '#10b981';
-                cardHoje.classList.add('glow-green');
-                elHoje.classList.add('positive');
-            } else if (lucroHoje <= -stop) {
-                elHojeStatus.textContent = '🛑 Stop atingido!';
-                elHojeStatus.style.color = '#ef4444';
-                cardHoje.classList.add('glow-red');
-                elHoje.classList.add('negative');
-            } else {
-                elHojeStatus.textContent = 'Em progresso...';
-                elHojeStatus.style.color = '#64748b';
-            }
-            
-            document.getElementById('kpiCapital').textContent = formatarMoeda(capital, 'USD');
-            document.getElementById('kpiCapitalBRL').textContent = formatarMoeda(capital * taxa, 'BRL');
-            
-            const lucroBruto = trades.filter(t => t.resultado === 'WIN').reduce((s, t) => s + calcularLucro(t), 0);
-            const perdaBruta = Math.abs(trades.filter(t => t.resultado === 'LOSS').reduce((s, t) => s + calcularLucro(t), 0));
-            let pf = '0,00';
-            if (perdaBruta > 0) {
-                pf = (lucroBruto / perdaBruta).toFixed(2).replace('.', ',');
-            } else if (lucroBruto > 0) {
-                pf = 'MAX';
-            }
-            document.getElementById('kpiPF').textContent = pf;
-            
-            const roi = bancaInicial > 0 ? ((capital - bancaInicial) / bancaInicial * 100) : 0;
-            const elROI = document.getElementById('kpiROI');
-            elROI.textContent = (roi >= 0 ? '+' : '') + roi.toFixed(2).replace('.', ',') + '%';
-            elROI.className = 'kpi-value ' + (roi >= 0 ? 'positive' : 'negative');
-            
-            document.getElementById('graficoOperacoes').textContent = trades.filter(t => t.resultado).length;
-            document.getElementById('graficoMoeda').textContent = moedaGrafico;
-            
-            renderizarTabela();
-            atualizarGraficos();
         }
     </script>
 </body>
