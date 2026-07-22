@@ -1508,19 +1508,19 @@ function doGet() {
 
             if (status === 'conectado') {
                 btn.className = "btn btn-cloud";
-                btn.innerHTML = `🟢 Drive online`;
+                btn.innerHTML = `🟢 Drive`;
                 if (modalLabel) modalLabel.textContent = "Conectado ao Drive";
                 if (modalSub) modalSub.textContent = ultimaSyncTexto();
                 setCard("rgba(16,185,129,0.10)", "rgba(16,185,129,0.35)", "#10b981", "#34d399");
             } else if (status === 'sincronizando') {
                 btn.className = "btn btn-cloud syncing";
-                btn.innerHTML = `🟡 Gravando Drive...`;
+                btn.innerHTML = `🟡 Gravando`;
                 if (modalLabel) modalLabel.textContent = "Sincronizando dados...";
                 if (modalSub) modalSub.textContent = "Enviando para o Google Drive...";
                 setCard("rgba(245,158,11,0.10)", "rgba(245,158,11,0.35)", "#fbbf24", "#fbbf24");
             } else if (status === 'desconectado') {
                 btn.className = "btn btn-cloud disconnected";
-                btn.innerHTML = `🔴 Falha na Rede`;
+                btn.innerHTML = `🔴 Falha`;
                 if (modalLabel) modalLabel.textContent = "Falha na conexão";
                 if (modalSub) modalSub.textContent = "Não foi possível salvar no Drive";
                 setCard("rgba(239,68,68,0.10)", "rgba(239,68,68,0.35)", "#ef4444", "#f87171");
