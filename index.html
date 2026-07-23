@@ -14,7 +14,7 @@
             padding: 0;
             box-sizing: border-box;
         }
-        
+       
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background: #0a0e17;
@@ -23,17 +23,17 @@
             padding: 16px;
             overflow-x: hidden;
         }
-        
+       
         html {
             scroll-behavior: smooth;
         }
-        
+       
         .container {
             max-width: 1400px;
             margin: 0 auto;
             width: 100%;
         }
-        
+       
         /* Header */
         .header {
             display: flex;
@@ -47,7 +47,7 @@
             flex-wrap: wrap;
             gap: 16px;
         }
-        
+       
         .brand {
             display: flex;
             align-items: center;
@@ -55,7 +55,7 @@
             cursor: pointer;
             user-select: none;
         }
-        
+       
         .logo {
             width: 44px;
             height: 44px;
@@ -67,12 +67,12 @@
             font-size: 22px;
             flex-shrink: 0;
         }
-        
+       
         .brand h1 {
             font-size: 18px;
             font-weight: 700;
         }
-        
+       
         .pro-badge {
             background: linear-gradient(90deg, #10b981, #059669);
             color: white;
@@ -81,13 +81,13 @@
             border-radius: 4px;
             margin-left: 4px;
         }
-        
+       
         .brand p {
             font-size: 12px;
             color: #94a3b8;
             margin-top: 2px;
         }
-        
+       
         /* Stats */
         .header-stats {
             display: flex;
@@ -95,7 +95,7 @@
             flex-wrap: wrap;
             align-items: center;
         }
-        
+       
         .stat-box {
             background: #1a2233;
             border-radius: 10px;
@@ -103,11 +103,11 @@
             min-width: 110px;
             transition: transform 0.2s ease;
         }
-        
+       
         .stat-box:hover {
             transform: translateY(-2px);
         }
-        
+       
         .stat-label {
             font-size: 10px;
             color: #64748b;
@@ -115,27 +115,27 @@
             margin-bottom: 4px;
             letter-spacing: 0.5px;
         }
-        
+       
         .stat-value {
             font-size: 18px;
             font-weight: 700;
             transition: all 0.3s ease;
         }
-        
+       
         .positive { color: #10b981; }
         .negative { color: #ef4444; }
-        
+       
         .rate-row {
             display: flex;
             align-items: center;
             gap: 4px;
         }
-        
+       
         .rate-row span {
             color: #64748b;
             font-size: 13px;
         }
-        
+       
         .rate-row input {
             width: 70px;
             background: transparent;
@@ -147,7 +147,7 @@
             border-bottom: 1px solid transparent;
             transition: border-color 0.2s;
         }
-        
+       
         .rate-row input:focus {
             border-bottom-color: #3b82f6;
         }
@@ -157,7 +157,7 @@
             gap: 8px;
             flex-wrap: wrap;
         }
-        
+       
         /* Responsividade do Header */
         @media (max-width: 1024px) {
             .header {
@@ -214,7 +214,7 @@
                 min-width: 0;
             }
         }
-        
+       
         /* Buttons */
         .btn {
             padding: 10px 16px;
@@ -231,34 +231,34 @@
             position: relative;
             overflow: hidden;
         }
-        
+       
         .btn:active {
             transform: scale(0.97);
         }
-        
+       
         .btn-outline {
             background: #1a2233;
             color: #94a3b8;
             border: 1px solid rgba(148, 163, 184, 0.1);
         }
-        
+       
         .btn-outline:hover {
             background: #0f1520;
             color: #f8fafc;
             border-color: rgba(148, 163, 184, 0.3);
         }
-        
+       
         .btn-danger {
             background: rgba(239, 68, 68, 0.1);
             color: #ef4444;
             border: 1px solid rgba(239, 68, 68, 0.2);
         }
-        
+       
         .btn-danger:hover {
             background: rgba(239, 68, 68, 0.2);
             border-color: rgba(239, 68, 68, 0.4);
         }
-        
+       
         .btn-primary {
             background: linear-gradient(90deg, #3b82f6, #2563eb);
             color: white;
@@ -266,7 +266,7 @@
             position: relative;
             overflow: hidden;
         }
-        
+       
         .btn-primary::after {
             content: '';
             position: absolute;
@@ -277,11 +277,11 @@
             background: linear-gradient(90deg, transparent, rgba(255,255,255,0.15), transparent);
             transition: left 0.5s;
         }
-        
+       
         .btn-primary:hover::after {
             left: 100%;
         }
-        
+       
         .btn-primary:hover {
             opacity: 0.95;
             transform: translateY(-1px);
@@ -332,7 +332,7 @@
             background: rgba(244, 63, 94, 0.22);
             color: #fecdd3;
         }
-        
+       
         /* KPI Grid */
         .kpi-grid {
             display: grid;
@@ -340,11 +340,11 @@
             gap: 14px;
             margin-bottom: 20px;
         }
-        
+       
         @media (max-width: 1400px) {
             .kpi-grid { grid-template-columns: repeat(3, 1fr); }
         }
-        
+       
         @media (max-width: 768px) {
             .kpi-grid { grid-template-columns: repeat(2, 1fr); gap: 10px; }
         }
@@ -352,7 +352,7 @@
         @media (max-width: 480px) {
             .kpi-grid { grid-template-columns: 1fr; }
         }
-        
+       
         .kpi-card {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.08);
@@ -363,13 +363,13 @@
             transition: all 0.4s ease;
             cursor: default;
         }
-        
+       
         .kpi-card:hover {
             transform: translateY(-2px);
             border-color: rgba(148, 163, 184, 0.2);
             box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
-        
+       
         .kpi-card::before {
             content: '';
             position: absolute;
@@ -378,14 +378,14 @@
             width: 4px;
             height: 100%;
         }
-        
+       
         .purple::before { background: linear-gradient(180deg, #8b5cf6, transparent); }
         .blue::before { background: linear-gradient(180deg, #3b82f6, transparent); }
         .orange::before { background: linear-gradient(180deg, #f97316, transparent); }
         .green::before { background: linear-gradient(180deg, #10b981, transparent); }
         .cyan::before { background: linear-gradient(180deg, #06b6d4, transparent); }
         .red::before { background: linear-gradient(180deg, #ef4444, transparent); }
-        
+       
         .kpi-label {
             font-size: 11px;
             color: #64748b;
@@ -393,30 +393,30 @@
             margin-bottom: 6px;
             letter-spacing: 0.5px;
         }
-        
+       
         .kpi-value {
             font-size: 24px;
             font-weight: 800;
             transition: all 0.3s ease;
         }
-        
+       
         .purple .kpi-value { color: #8b5cf6; }
         .blue .kpi-value { color: #3b82f6; }
         .orange .kpi-value { color: #f97316; }
         .green .kpi-value { color: #10b981; }
         .cyan .kpi-value { color: #06b6d4; }
         .red .kpi-value { color: #ef4444; }
-        
+       
         /* Cores dinâmicas */
         .kpi-value.positive { color: #10b981 !important; }
         .kpi-value.negative { color: #ef4444 !important; }
-        
+       
         .kpi-sub {
             font-size: 12px;
             color: #64748b;
             margin-top: 4px;
         }
-        
+       
         .progress-bar {
             height: 4px;
             background: #1a2233;
@@ -424,25 +424,25 @@
             margin-top: 10px;
             overflow: hidden;
         }
-        
+       
         .progress-fill {
             height: 100%;
             background: #10b981;
             border-radius: 2px;
             transition: width 0.5s ease;
         }
-        
+       
         /* Main Content */
         .main-content {
             display: grid;
             grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr);
             gap: 16px;
         }
-        
+       
         @media (max-width: 1200px) {
             .main-content { grid-template-columns: minmax(0, 1fr); }
         }
-        
+       
         .panel {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.08);
@@ -450,7 +450,7 @@
             padding: 18px;
             min-width: 0;
         }
-        
+       
         .panel-header {
             display: flex;
             justify-content: space-between;
@@ -459,7 +459,7 @@
             flex-wrap: wrap;
             gap: 8px;
         }
-        
+       
         @media (max-width: 640px) {
             .panel {
                 padding: 14px;
@@ -472,14 +472,14 @@
                 font-size: 12px;
             }
         }
-        
+       
         .panel-title {
             font-size: 14px;
             font-weight: 700;
             text-transform: uppercase;
             letter-spacing: 0.5px;
         }
-        
+       
         /* Table */
         .table-container {
             overflow-x: auto;
@@ -489,7 +489,7 @@
             border-radius: 8px;
             position: relative;
         }
-        
+       
         .table-loading {
             position: absolute;
             top: 0;
@@ -504,7 +504,7 @@
             backdrop-filter: blur(2px);
             border-radius: 8px;
         }
-        
+       
         .table-loading::after {
             content: '';
             width: 24px;
@@ -514,18 +514,18 @@
             border-radius: 50%;
             animation: spin 0.8s linear infinite;
         }
-        
+       
         @keyframes spin {
             to { transform: rotate(360deg); }
         }
-        
+       
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 13px;
             min-width: 700px;
         }
-        
+       
         th {
             text-align: center;
             padding: 12px 8px;
@@ -539,7 +539,7 @@
             z-index: 10;
             white-space: nowrap;
         }
-        
+       
         td {
             padding: 10px 8px;
             border-bottom: 1px solid rgba(148, 163, 184, 0.08);
@@ -547,11 +547,11 @@
             vertical-align: middle;
             white-space: nowrap;
         }
-        
+       
         tr:hover {
             background: rgba(59, 130, 246, 0.03);
         }
-        
+       
         .trade-input {
             background: #0f1520;
             border: 1px solid rgba(148, 163, 184, 0.1);
@@ -563,7 +563,7 @@
             text-align: center;
             transition: border-color 0.2s, box-shadow 0.2s;
         }
-        
+       
         .trade-input:focus {
             border-color: #3b82f6;
             box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
@@ -607,18 +607,18 @@
             user-select: none;
             min-width: 28px;
         }
-        
+       
         .val-btn:hover {
             background: #3b82f6;
             color: white;
             border-color: #3b82f6;
             transform: scale(1.05);
         }
-        
+       
         .val-btn:active {
             transform: scale(0.95);
         }
-        
+       
         .result-btn {
             width: 32px;
             height: 32px;
@@ -635,39 +635,39 @@
             align-items: center;
             justify-content: center;
         }
-        
+       
         .result-btn:hover {
             transform: scale(1.1);
         }
-        
+       
         .result-btn:active {
             transform: scale(0.95);
         }
-        
+       
         .result-btn.win.active {
             background: #10b981;
             color: white;
             border-color: #10b981;
             box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
         }
-        
+       
         .result-btn.loss.active {
             background: #ef4444;
             color: white;
             border-color: #ef4444;
             box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
         }
-        
+       
         .result-btn.draw.active {
             background: #64748b;
             color: white;
             border-color: #64748b;
             box-shadow: 0 0 12px rgba(100, 116, 139, 0.5);
         }
-        
+       
         .profit-positive { color: #10b981; font-weight: 700; }
         .profit-negative { color: #ef4444; font-weight: 700; }
-        
+       
         .delete-btn {
             background: transparent;
             border: none;
@@ -687,7 +687,7 @@
             background: rgba(239, 68, 68, 0.12);
             transform: scale(1.1);
         }
-        
+       
         .currency-toggle {
             display: flex;
             gap: 4px;
@@ -695,7 +695,7 @@
             padding: 4px;
             border-radius: 6px;
         }
-        
+       
         .currency-btn {
             padding: 6px 12px;
             border: none;
@@ -707,12 +707,12 @@
             color: #64748b;
             transition: all 0.2s;
         }
-        
+       
         .currency-btn.active {
             background: #3b82f6;
             color: white;
         }
-        
+       
         .chart-wrapper {
             background: #0f1520;
             border-radius: 10px;
@@ -721,26 +721,26 @@
             position: relative;
             min-height: 200px;
         }
-        
+       
         @media (max-width: 640px) {
             .chart-wrapper {
                 height: 200px;
                 padding: 12px;
             }
         }
-        
+       
         .empty-state {
             text-align: center;
             padding: 60px 20px;
             color: #64748b;
         }
-        
+       
         .empty-state .icon {
             font-size: 48px;
             margin-bottom: 16px;
             opacity: 0.4;
         }
-        
+       
         /* Modal */
         .modal {
             display: none;
@@ -756,17 +756,17 @@
             backdrop-filter: blur(4px);
             padding: 16px;
         }
-        
+       
         .modal.show {
             display: flex;
             animation: fadeIn 0.2s ease;
         }
-        
+       
         @keyframes fadeIn {
             from { opacity: 0; }
             to { opacity: 1; }
         }
-        
+       
         .modal-content {
             background: #121826;
             border: 1px solid rgba(148, 163, 184, 0.1);
@@ -780,12 +780,12 @@
             max-height: 90vh;
             overflow-y: auto;
         }
-        
+       
         @keyframes slideUp {
             from { transform: translateY(20px); opacity: 0; }
             to { transform: translateY(0); opacity: 1; }
         }
-        
+       
         @media (max-width: 480px) {
             .modal-content {
                 padding: 20px;
@@ -799,26 +799,26 @@
                 justify-content: center;
             }
         }
-        
+       
         .modal-content h3 {
             font-size: 18px;
             font-weight: 700;
             margin-bottom: 12px;
         }
-        
+       
         .modal-content p {
             color: #94a3b8;
             margin-bottom: 20px;
             font-size: 14px;
         }
-        
+       
         .modal-btns {
             display: flex;
             gap: 12px;
             justify-content: center;
             flex-wrap: wrap;
         }
-        
+       
         .form-input {
             width: 100%;
             padding: 12px 16px;
@@ -831,11 +831,11 @@
             outline: none;
             text-align: center;
         }
-        
+       
         .form-input:focus {
             border-color: #3b82f6;
         }
-        
+       
         input[type="file"] {
             display: none;
         }
@@ -866,11 +866,11 @@
             50% { transform: scale(1.05); }
             100% { transform: scale(1); }
         }
-        
+       
         .kpi-flash {
             animation: kpiFlash 0.3s ease;
         }
-        
+       
         /* Toasts feedback */
         .toast-container {
             position: fixed;
@@ -916,12 +916,12 @@
         @keyframes slideIn {
             to { transform: translateX(0); }
         }
-        
+       
         @keyframes slideOut {
             from { transform: translateX(0); opacity: 1; }
             to { transform: translateX(120%); opacity: 0; }
         }
-        
+       
         .toast-box.removing {
             animation: slideOut 0.3s forwards;
         }
@@ -945,23 +945,23 @@
             width: 6px;
             height: 6px;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-track {
             background: #0f1520;
             border-radius: 10px;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-thumb {
             background: #1e293b;
             border-radius: 10px;
             border: 1px solid rgba(148, 163, 184, 0.08);
             transition: background 0.2s;
         }
-        
+       
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
             background: #3b82f6;
         }
-        
+       
         .custom-scrollbar {
             scrollbar-width: thin;
             scrollbar-color: #1e293b #0f1520;
@@ -979,7 +979,7 @@
                     <p>Gerenciamento de Banca</p>
                 </div>
             </div>
-            
+           
             <div class="header-stats">
                 <div class="stat-box" style="display: none;">
                     <div class="stat-label">BANCA INICIAL</div>
@@ -1004,7 +1004,7 @@
                     </div>
                 </div>
             </div>
-            
+           
             <div class="header-buttons flex gap-2">
                 <button class="btn btn-cloud" id="btnNuvemAtiva" onclick="showNuvemModal()">☁️ Google Drive Auto</button>
                 <button class="btn btn-outline" onclick="showConfigModal()">⚙️ Padrões</button>
@@ -1066,7 +1066,7 @@
                     <!-- Gerado dinamicamente via JS -->
                 </div>
             </div>
-            
+           
             <div class="panel flex flex-col gap-4">
                 <div>
                     <div class="panel-header">
@@ -1227,10 +1227,10 @@ function doGet() {
 
     <!-- Toast Notifications Container -->
     <div id="toastContainer" class="toast-container"></div>
-    
+   
     <!-- Scroll to Top Button -->
     <button id="scrollTopBtn" onclick="window.scrollTo({top: 0, behavior: 'smooth'})" style="display: none; position: fixed; bottom: 24px; left: 24px; z-index: 9998; width: 44px; height: 44px; border-radius: 50%; background: #1e293b; border: 1px solid rgba(148,163,184,0.1); color: #94a3b8; cursor: pointer; font-size: 18px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.3);">↑</button>
-    
+   
     <script>
         // Scroll to top button visibility
         window.addEventListener('scroll', () => {
@@ -1247,13 +1247,13 @@ function doGet() {
         let bancaInicial = 10000;
         let moedaGrafico = 'USD';
         let dadosAlteradosSemSalvar = false;
-        
+       
         // Configurações padrão do usuário
         let cfgMetaDiaria = 0.75;   // % de meta diária sobre o capital de ontem
         let cfgStopDiario = 1.00;   // % de stop diário sobre o capital de ontem
         let cfgPctEntrada = 0.25;   // % do capital usado como valor de entrada sugerido
         let cfgPayout = 89;         // % de payout padrão ao criar trade
-        
+       
         // URL da Ponte do Google Drive (Apps Script)
         let googleScriptUrl = "";
         let syncTimer = null;
@@ -1262,11 +1262,11 @@ function doGet() {
         let ultimoHashDrive = "";    // hash do último JSON recebido do Drive (detecta mudanças)
         let cfgLocal = { meta: 0.75, stop: 1.00, entrada: 0.25, payout: 89 }; // config local persistida
         let cotacaoManual = false;   // true se o usuário editou a cotação manualmente
-        
+       
         // Referência global aos gráficos do Chart.js
         let chartEvolucao = null;
         let chartDiario = null;
-        
+       
         window.onload = function() {
             carregarDadosLocal();
             inicializarGraficos();
@@ -1303,12 +1303,12 @@ function doGet() {
                 }
             });
         }
-        
+       
         function showToast(mensagem, tipo = 'success') {
             const container = document.getElementById('toastContainer');
             const toast = document.createElement('div');
             toast.className = `toast-box ${tipo}`;
-            
+           
             let icone = '🔔';
             if (tipo === 'success') icone = '✅';
             if (tipo === 'error') icone = '❌';
@@ -1316,13 +1316,13 @@ function doGet() {
 
             toast.innerHTML = `<span>${icone}</span><span>${mensagem}</span>`;
             container.appendChild(toast);
-            
+           
             setTimeout(() => {
                 toast.classList.add('removing');
                 setTimeout(() => toast.remove(), 300);
             }, 3500);
         }
-        
+       
         function flashKPI(elementId) {
             const el = document.getElementById(elementId);
             if (el) {
@@ -1369,7 +1369,7 @@ function doGet() {
             const horaSalva = localStorage.getItem('GB_COTACAO_HORA');
             if (horaEl) horaEl.textContent = horaSalva ? 'Última: ' + horaSalva : '-';
         }
-        
+       
         function coletarConfig() {
             return { meta: cfgMetaDiaria, stop: cfgStopDiario, entrada: cfgPctEntrada, payout: cfgPayout };
         }
@@ -1430,7 +1430,7 @@ function doGet() {
                 atualizarBotaoNuvem('offline');
                 return;
             }
-            
+           
             atualizarBotaoNuvem('sincronizando');
 
             fetch(googleScriptUrl, { mode: 'cors', redirect: 'follow' })
@@ -1643,7 +1643,7 @@ function doGet() {
                 })
                 .catch(() => { /* mantém estado atual em caso de falha de rede */ });
         }
-        
+       
         function buscarCotacao(forcar = false) {
             const btnCambio = document.getElementById('taxaCambio');
             const horaEl = document.getElementById('horaCotacao');
@@ -1689,7 +1689,7 @@ function doGet() {
                     calcularTudo();
                 });
         }
-        
+       
         function calcularLucro(trade) {
             // Apenas operações (não depósitos/saques) geram lucro/prejuízo
             if (trade.tipo && trade.tipo !== 'TRADE') return 0;
@@ -1735,7 +1735,7 @@ function doGet() {
                 .reduce((soma, t) => soma + impactoCapital(t), 0);
             return bancaInicial + ateOntem;
         }
-        
+       
         function formatarMoeda(valor, moeda) {
             const abs = Math.abs(valor);
             const neg = valor < 0 ? '- ' : '';
@@ -1781,17 +1781,17 @@ function doGet() {
                 document.getElementById('inputBancaHeader').value = bancaInicial;
             }
         }
-        
+       
         function calcularTudoDebounced() {
             clearTimeout(debounceTimer);
             debounceTimer = setTimeout(() => calcularTudo(true), 150);
         }
-        
+       
         function calcularTudo(salvar = true) {
             const taxa = lerTaxa();
             const capital = capitalAtual();
             const lucroTotal = lucroOperacoes();
-            
+           
             const baseMetaStop = capitalAteOntem();
             const meta = baseMetaStop * (cfgMetaDiaria / 100);
             const stop = baseMetaStop * (cfgStopDiario / 100);
@@ -1806,40 +1806,40 @@ function doGet() {
             if (document.activeElement !== document.getElementById('inputBancaHeader')) {
                 document.getElementById('inputBancaHeader').value = bancaInicial;
             }
-            
+           
             const elLucro = document.getElementById('kpiLucro');
             elLucro.textContent = (lucroTotal >= 0 ? '+ ' : '') + formatarMoeda(lucroTotal, 'USD');
             elLucro.className = 'kpi-value ' + (lucroTotal >= 0 ? 'positive' : 'negative');
             flashKPI('kpiLucro');
             document.getElementById('kpiLucroBRL').textContent = formatarMoeda(lucroTotal * taxa, 'BRL');
-            
+           
             const finalizadas = trades.filter(t => t.resultado && t.resultado !== 'EMPATE' && (!t.tipo || t.tipo === 'TRADE'));
             const vitorias = trades.filter(t => t.resultado === 'WIN').length;
             const winrate = finalizadas.length > 0 ? (vitorias / finalizadas.length * 100) : 0;
             document.getElementById('kpiWinrate').textContent = winrate.toFixed(1).replace('.', ',') + '%';
             document.getElementById('barraWinrate').style.width = Math.min(winrate, 100) + '%';
             flashKPI('kpiWinrate');
-            
+           
             const dLocal = new Date();
-            const hojeLocalStr = dLocal.getFullYear() + '-' + 
-                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' + 
+            const hojeLocalStr = dLocal.getFullYear() + '-' +
+                                String(dLocal.getMonth() + 1).padStart(2, '0') + '-' +
                                 String(dLocal.getDate()).padStart(2, '0');
 
             const lucroHoje = trades
                 .filter(t => (t.data || '').startsWith(hojeLocalStr) && t.resultado)
                 .reduce((soma, t) => soma + calcularLucro(t), 0);
-            
+           
             const elHoje = document.getElementById('kpiHoje');
             elHoje.textContent = (lucroHoje >= 0 ? '+ ' : '') + formatarMoeda(lucroHoje, 'USD');
             elHoje.className = 'kpi-value';
             flashKPI('kpiHoje');
-            
+           
             const elHojeStatus = document.getElementById('kpiHojeStatus');
             const cardHoje = document.getElementById('cardHoje');
-            
+           
             cardHoje.classList.remove('glow-green', 'glow-red');
             elHoje.classList.remove('positive', 'negative');
-            
+           
             if (lucroHoje >= meta) {
                 elHojeStatus.textContent = '🚀 Meta batida!';
                 elHojeStatus.style.color = '#10b981';
@@ -1854,11 +1854,11 @@ function doGet() {
                 elHojeStatus.textContent = 'Em progresso...';
                 elHojeStatus.style.color = '#64748b';
             }
-            
+           
             document.getElementById('kpiCapital').textContent = formatarMoeda(capital, 'USD');
             document.getElementById('kpiCapitalBRL').textContent = formatarMoeda(capital * taxa, 'BRL');
             flashKPI('kpiCapital');
-            
+           
             const lucroBruto = trades.filter(t => t.resultado === 'WIN').reduce((s, t) => s + calcularLucro(t), 0);
             const perdaBruta = Math.abs(trades.filter(t => t.resultado === 'LOSS').reduce((s, t) => s + calcularLucro(t), 0));
             let pf = '0,00';
@@ -1869,27 +1869,27 @@ function doGet() {
             }
             document.getElementById('kpiPF').textContent = pf;
             flashKPI('kpiPF');
-            
+           
             const roi = bancaInicial > 0 ? (lucroTotal / bancaInicial * 100) : 0;
             const elROI = document.getElementById('kpiROI');
             elROI.textContent = (roi >= 0 ? '+' : '') + roi.toFixed(2).replace('.', ',') + '%';
             elROI.className = 'kpi-value ' + (roi >= 0 ? 'positive' : 'negative');
             flashKPI('kpiROI');
-            
+           
             document.getElementById('graficoOperacoes').textContent = trades.filter(t => t.resultado).length;
             document.getElementById('graficoMoeda').textContent = moedaGrafico;
-            
+           
             renderizarTabela();
             atualizarGraficos();
-            
+           
             if (salvar) {
                 salvarDados();
             }
         }
-        
+       
         function renderizarTabela() {
             const container = document.getElementById('tabelaContainer');
-            
+           
             if (trades.length === 0) {
                 container.innerHTML = `
                     <div class="empty-state">
@@ -1899,7 +1899,7 @@ function doGet() {
                     </div>`;
                 return;
             }
-            
+           
             if (trades.length > 50) {
                 container.innerHTML = `
                     <div class="table-loading"></div>
@@ -1910,10 +1910,10 @@ function doGet() {
                 setTimeout(() => renderizarTabelaConteudo(container), 50);
                 return;
             }
-            
+           
             renderizarTabelaConteudo(container);
         }
-        
+       
         function renderizarTabelaConteudo(container) {
             let html = `
                 <table class="w-full">
@@ -1930,7 +1930,7 @@ function doGet() {
                     </thead>
                     <tbody>
             `;
-            
+           
             [...trades].reverse().forEach((trade, idx) => {
                 const idxOriginal = trades.length - 1 - idx;
                 const lucro = impactoCapital(trade);
@@ -1988,11 +1988,11 @@ function doGet() {
                     </tr>
                 `;
             });
-            
+           
             html += '</tbody></table>';
             container.innerHTML = html;
         }
-        
+       
         function adicionarTrade() {
             const capital = capitalAtual();
             const entradaSugerida = Math.max(1, Math.floor(capital * (cfgPctEntrada / 100)));
@@ -2037,7 +2037,7 @@ function doGet() {
                 container.scrollTop = 0;
             }, 100);
         }
-        
+       
         function atualizarTrade(id, campo, valor) {
             trades = trades.map(t => t.id === id ? { ...t, [campo]: valor } : t);
             dadosAlteradosSemSalvar = true;
@@ -2069,27 +2069,27 @@ function doGet() {
             calcularTudo();
             showToast('Valor da operação dividido por 2!', 'success');
         }
-        
+       
         function definirResultado(id, resultado) {
             trades = trades.map(t => t.id === id ? { ...t, resultado } : t);
             dadosAlteradosSemSalvar = true;
             calcularTudo();
         }
-        
+       
         function removerTrade(id) {
             trades = trades.filter(t => t.id !== id);
             dadosAlteradosSemSalvar = true;
             calcularTudo();
             showToast('Operação removida.', 'warning');
         }
-        
+       
         function mudarMoeda(moeda) {
             moedaGrafico = moeda;
             document.getElementById('btnUSD').classList.toggle('active', moeda === 'USD');
             document.getElementById('btnBRL').classList.toggle('active', moeda === 'BRL');
             calcularTudo();
         }
-        
+       
         function inicializarGraficos() {
             const ctxEvolucao = document.getElementById('canvasEvolucao').getContext('2d');
             chartEvolucao = new Chart(ctxEvolucao, {
@@ -2219,7 +2219,7 @@ function doGet() {
             chartEvolucao.data.datasets[0].backgroundColor = corSombra;
             chartEvolucao.data.datasets[0].pointBackgroundColor = corTema;
             chartEvolucao.data.datasets[0].pointBorderColor = corTema;
-            
+           
             const wrapperEvol = document.getElementById('wrapperEvolucao');
             const minWidthEvol = Math.max(100, labelsSaldo.length * 35);
             const targetWidthEvol = labelsSaldo.length > 10 ? `${minWidthEvol}px` : '100%';
@@ -2249,7 +2249,7 @@ function doGet() {
             chartDiario.data.labels = dias;
             chartDiario.data.datasets[0].data = valoresDias;
             chartDiario.data.datasets[0].backgroundColor = coresDias;
-            
+           
             const wrapperDiario = document.getElementById('wrapperRetornoDiario');
             const minWidthDiario = Math.max(100, dias.length * 60);
             const targetWidthDiario = dias.length > 5 ? `${minWidthDiario}px` : '100%';
@@ -2340,15 +2340,15 @@ function doGet() {
             }
             mostrarModal('modalNuvem');
         }
-        
+       
         function mostrarModal(id) {
             document.getElementById(id).classList.add('show');
         }
-        
+       
         function fecharModal(id) {
             document.getElementById(id).classList.remove('show');
         }
-        
+       
         function salvarBanca() {
             const valor = parseFloat(document.getElementById('inputBanca').value);
             if (valor && valor > 0) {
@@ -2361,7 +2361,7 @@ function doGet() {
                 showToast('Valor de banca inválido.', 'error');
             }
         }
-        
+       
         function confirmarReset() {
             trades = [];
             bancaInicial = 0;
@@ -2371,7 +2371,7 @@ function doGet() {
             calcularTudo();
             showToast('Todos os dados foram resetados com sucesso.', 'warning');
         }
-        
+       
         function exportarDados() {
             try {
                 const dados = {
@@ -2379,28 +2379,28 @@ function doGet() {
                     bancaInicial: bancaInicial,
                     taxaCambio: lerTaxa()
                 };
-                
+               
                 const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(dados, null, 2));
                 const downloadAnchor = document.createElement('a');
                 const dataBackup = new Date().toISOString().split('T')[0];
-                
+               
                 downloadAnchor.setAttribute("href", dataStr);
                 downloadAnchor.setAttribute("download", `GB_Pro_Backup_${dataBackup}.json`);
                 document.body.appendChild(downloadAnchor);
                 downloadAnchor.click();
                 downloadAnchor.remove();
-                
+               
                 dadosAlteradosSemSalvar = false;
                 showToast('Backup gerado e baixado com sucesso!', 'success');
             } catch (err) {
                 showToast('Falha ao exportar os dados.', 'error');
             }
         }
-        
+       
         function importarDados(input) {
             const file = input.files[0];
             if (!file) return;
-            
+           
             const reader = new FileReader();
             reader.onload = function(e) {
                 try {
@@ -2409,7 +2409,7 @@ function doGet() {
                         trades = dados.trades || [];
                         bancaInicial = dados.bancaInicial || 10000;
                         document.getElementById('taxaCambio').value = formatarTaxa(dados.taxaCambio || 5.09);
-                        
+                       
                         dadosAlteradosSemSalvar = true;
                         calcularTudo();
                         showToast('Backup restaurado com sucesso!', 'success');
